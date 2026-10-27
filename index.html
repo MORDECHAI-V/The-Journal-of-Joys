@@ -5,318 +5,1886 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#14213d">
 <title>יומן-השמחות</title>
-
-<!-- SEO -->
-<meta name="description" content="יומן השמחות - מערכת לניהול תאריכי חתונות, מיקומי אולמות וזמני הגעה.">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://your-domain.vercel.app/">
-
-<!-- Open Graph (Facebook / WhatsApp / etc.) -->
-<meta property="og:type" content="website">
-<meta property="og:locale" content="he_IL">
-<meta property="og:site_name" content="יומן-השמחות">
-<meta property="og:title" content="יומן-השמחות">
-<meta property="og:description" content="יומן השמחות - מערכת לניהול תאריכי חתונות, מיקומי אולמות וזמני הגעה.">
-<meta property="og:url" content="https://your-domain.vercel.app/">
-<meta property="og:image" content="https://your-domain.vercel.app/חתונה1.png">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="יומן-השמחות">
-<meta name="twitter:description" content="יומן השמחות - מערכת לניהול תאריכי חתונות, מיקומי אולמות וזמני הגעה.">
-<meta name="twitter:image" content="https://your-domain.vercel.app/חתונה1.png">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --bg: #f7f6f2;
-        --navy: #14213d;
-        --navy-light: #1f325c;
-        --gold: #9a7b3e;
-        --gold-bright: #d4af37;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
+:root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface-alt: #f0eee9;
+    --navy: #14213d;
+    --navy-light: #1f325c;
+    --gold: #9a7b3e;
+    --gold-bright: #d4af37;
+    --gold-light: #f5efe2;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --line: #e2dfd7;
+    --line-strong: #cbd5e1;
+    --badge-today-bg: #dcfce7;
+    --badge-today-text: #166534;
+    --badge-week-bg: #e0f2fe;
+    --badge-week-text: #075985;
+    --badge-month-bg: #fef3c7;
+    --badge-month-text: #92400e;
+    --danger: #dc2626;
+    --success: #15803d;
+    --radius: 8px;
+    --shadow-sm: 0 1px 3px rgba(20, 33, 61, 0.05);
+    --shadow-md: 0 4px 12px rgba(20, 33, 61, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--text-main);
+    font-family: 'Heebo', sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea {
+    font: inherit;
+}
+
+.shell {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+}
+
+/* Header / Hero */
+.hero {
+    background: linear-gradient(180deg, #182848 0%, var(--navy) 100%);
+    color: #ffffff;
+    padding: 56px 36px;
+    margin-top: 24px;
+    border-radius: var(--radius);
+    border-bottom: 5px solid var(--gold);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.eyebrow {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #e6c885;
+    font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+}
+
+.hero h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 900;
+    font-size: clamp(3rem, 6vw, 4.6rem);
+    line-height: 1.1;
+    margin: 0 0 18px 0;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.hero h1::after {
+    content: "";
+    display: block;
+    width: 90px;
+    height: 3px;
+    background-color: var(--gold-bright);
+    margin: 18px auto 0;
+    border-radius: 2px;
+}
+
+.hero h1 br {
+    display: none;
+}
+
+.hero p {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #e2e8f0;
+    font-size: clamp(1.15rem, 2vw, 1.45rem);
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Navigation Tabs */
+.tabs {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    overflow-x: auto;
+    background: rgba(247, 246, 242, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 16px 0 0 0;
+    border-bottom: 1px solid var(--line);
+    margin-top: 16px;
+}
+
+.tab {
+    white-space: nowrap;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 10px 18px 12px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.tab:hover {
+    color: var(--navy);
+}
+
+.tab.active {
+    color: var(--navy);
+    font-weight: 700;
+    border-bottom-color: var(--gold);
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    padding: 24px 0;
+    flex-wrap: wrap;
+}
+
+.toolbar-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.toolbar-filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.btn {
+    border: 1px solid var(--navy);
+    background: var(--navy);
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.btn:hover {
+    background: var(--navy-light);
+    border-color: var(--navy-light);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.btn.ghost {
+    background: var(--surface);
+    color: var(--navy);
+    border-color: var(--line-strong);
+}
+
+.btn.ghost:hover {
+    background: var(--surface-alt);
+}
+
+.btn.small {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+}
+
+.search, .sort-select {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search {
+    width: min(300px, 100%);
+}
+
+.sort-select {
+    cursor: pointer;
+    font-weight: 500;
+    min-width: 210px;
+}
+
+.search:focus, .sort-select:focus {
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(20, 33, 61, 0.08);
+}
+
+/* Views & Sections */
+.view {
+    display: none;
+}
+
+.view.active {
+    display: block;
+}
+
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 8px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.section-head h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 1.65rem;
+    color: var(--navy);
+    margin: 0;
+}
+
+.section-head span, .muted {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Cards Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.card, .message, .request {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+}
+
+.card:hover {
+    border-color: #cbd5e1;
+    box-shadow: var(--shadow-md);
+}
+
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    min-height: 28px;
+}
+
+.badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    background: var(--badge-today-bg);
+    color: var(--badge-today-text);
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 4px;
+}
+
+.badge.week {
+    background: var(--badge-week-bg);
+    color: var(--badge-week-text);
+}
+
+.badge.month {
+    background: var(--badge-month-bg);
+    color: var(--badge-month-text);
+}
+
+.card-actions-top {
+    display: flex;
+    gap: 6px;
+    margin-right: auto;
+}
+
+.icon-action-btn {
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    color: var(--navy);
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.icon-action-btn:hover {
+    background: var(--navy);
+    color: #ffffff;
+    border-color: var(--navy);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+}
+
+.name {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--navy);
+}
+
+.date {
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: left;
+    background: var(--gold-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    line-height: 1.35;
+    flex-shrink: 0;
+}
+
+.details {
+    display: grid;
+    gap: 10px;
+    padding: 14px 0 4px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 0.95rem;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.row span:last-child {
+    font-weight: 600;
+    color: var(--text-main);
+    text-align: left;
+}
+
+.edit {
+    width: 100%;
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--navy);
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 9px;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.edit:hover {
+    background: #e5e2dc;
+}
+
+/* עיצוב חלונית תיקיית הדרייב המרוכזת */
+.drive-window-card {
+    background: var(--surface-alt);
+    border: 1px solid var(--line-strong);
+    border-top: 4px solid var(--gold);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.drive-window-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 22px;
+    background: var(--gold-light);
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.drive-window-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy);
+}
+
+.drive-frame-wrapper {
+    padding: 18px;
+    background: var(--surface-alt);
+    box-shadow: inset 0 2px 6px rgba(20, 33, 61, 0.06);
+}
+
+.drive-embed-frame {
+    width: 100%;
+    height: 600px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    display: block;
+    background: var(--bg);
+    box-shadow: 0 3px 10px rgba(20, 33, 61, 0.08);
+    filter: sepia(0.08) brightness(0.97) contrast(1.03) drop-shadow(0 2px 4px rgba(20, 33, 61, 0.06));
+    transition: filter 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.drive-embed-frame:hover {
+    box-shadow: 0 6px 16px rgba(20, 33, 61, 0.12);
+}
+
+.drive-embed-frame:active {
+    filter: sepia(0.1) brightness(0.92) contrast(1.04);
+}
+
+.empty {
+    text-align: center;
+    background: var(--surface);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius);
+    padding: 48px 20px;
+    color: var(--text-muted);
+    grid-column: 1 / -1;
+}
+
+/* Calendar */
+.calendar-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    background: var(--surface);
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.calendar-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: var(--navy);
+}
+
+.calendar-legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.legend-dot.yeshiva {
+    background: var(--surface-alt);
+    border-right: 3px solid var(--navy);
+}
+
+.legend-dot.graduates {
+    background: var(--gold-light);
+    border-right: 3px solid var(--gold);
+}
+
+.calendar-scroll {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-top: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+}
+
+.weekday, .day {
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.weekday {
+    padding: 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--navy);
+    background: var(--surface-alt);
+}
+
+.day {
+    min-height: 115px;
+    padding: 8px;
+    background: var(--surface);
+}
+
+.day.out {
+    background: #faf9f6;
+    opacity: 0.45;
+}
+
+.day.today {
+    background: #fdfcf7;
+    box-shadow: inset 0 0 0 2px var(--gold);
+}
+
+.day-num {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.cal-event {
+    display: block;
+    width: 100%;
+    border: none;
+    border-right: 3px solid var(--navy);
+    background: var(--surface-alt);
+    color: var(--navy);
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 5px 8px;
+    border-radius: 3px;
+    text-align: right;
+    margin: 4px 0;
+    cursor: pointer;
+    transition: background-color 0.15s, filter 0.15s;
+}
+
+.cal-event:hover {
+    filter: brightness(0.95);
+}
+
+.cal-event.graduates-event {
+    background: var(--gold-light);
+    border-right-color: var(--gold);
+    color: #6b5222;
+}
+
+.undated {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.undated:empty {
+    display: none;
+}
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 50;
+    place-items: center;
+    padding: 20px;
+}
+
+.modal.open {
+    display: grid;
+}
+
+.dialog {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    width: min(620px, 100%);
+    max-height: 90vh;
+    overflow: auto;
+    padding: 28px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+.dialog.small-dialog {
+    width: min(400px, 100%);
+}
+
+.dialog h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 1.65rem;
+    margin: 0 0 16px;
+    color: var(--navy);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+}
+
+/* Forms */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.field.full {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    display: block;
+    color: var(--text-main);
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.field input, .field select, .field textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    color: var(--text-main);
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(20, 33, 61, 0.08);
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+}
+
+.status {
+    min-height: 22px;
+    color: var(--danger);
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin: 12px 0 0;
+}
+
+.status.ok {
+    color: var(--success);
+}
+
+/* Contact Section */
+.contact-wrap {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 40px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: clamp(24px, 4vw, 44px);
+    box-shadow: var(--shadow-sm);
+    margin-top: 20px;
+}
+
+.contact-copy .eyebrow {
+    color: var(--gold);
+    font-size: 1rem;
+}
+
+.contact-copy h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 1.85rem;
+    color: var(--navy);
+    margin: 4px 0 12px;
+}
+
+.contact-copy p {
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* תצוגת מאורסים (מעל הפרסומת, ישירות על גבי רקע האתר וללא חלונית) */
+.meorasim-inline-section {
+    margin-top: 44px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.meorasim-frame {
+    width: 100%;
+    min-height: 160px;
+    border: none;
+    background: transparent;
+    display: block;
+    overflow: hidden;
+}
+
+/* פס נע חלק במיוחד למודעות מאורסים (ללא קטיעות - מואץ חומרה) */
+.meorasim-strip {
+    margin-top: 44px;
+    overflow: hidden;
+    width: 100%;
+    direction: ltr;
+    position: relative;
+    mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+}
+
+.meorasim-track {
+    display: flex;
+    width: max-content;
+    gap: 18px;
+    padding: 12px 0;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.meorasim-item {
+    flex: 0 0 auto;
+    height: 130px;
+    border-radius: 6px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    padding: 4px;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    transform: translateZ(0);
+}
+
+.meorasim-item:hover {
+    transform: translateY(-4px) scale(1.05);
+    border-color: var(--gold);
+    box-shadow: var(--shadow-md);
+    z-index: 2;
+}
+
+.meorasim-item img {
+    height: 100%;
+    width: auto;
+    display: block;
+    border-radius: 4px;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Virtual Window for Ads (פרסומות.html) - ממוקם מתחת למאורסים */
+.ads-window {
+    margin-top: 28px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--gold);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.ads-frame {
+    width: 100%;
+    min-height: 250px;
+    border: none;
+    display: block;
+}
+
+/* אלמנט עזר להדפסת חתונה בודדת (מוסתר בתצוגה רגילה) */
+#singleWeddingPrintArea {
+    display: none;
+}
+
+/* הגדרות הדפסה */
+@media print {
+    @page {
+        margin: 12mm;
     }
-    * { box-sizing: border-box; }
-    html, body {
-        margin: 0;
-        height: 100%;
-        font-family: 'Heebo', Arial, sans-serif;
-        background: var(--bg);
+
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
-    #loginScreen {
-        position: relative;
-        z-index: 1;
-        min-height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 32px 24px;
-        background: linear-gradient(180deg, rgba(247,246,242,0.55), rgba(247,246,242,0.88));
+
+    .shell {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
-    .lock-card {
-        max-width: 560px;
-        width: 100%;
-        text-align: center;
+
+    /* הסתרת רכיבי ניווט, חיפוש, מודאלים ופרסומות בעת הדפסה */
+    .tabs,
+    .toolbar,
+    .modal,
+    #adsContainer,
+    #meorasimContainer,
+    #meorasimTickerContainer,
+    .no-print {
+        display: none !important;
     }
-    .lock-hero {
-        background: linear-gradient(180deg, #182848 0%, var(--navy) 100%);
-        border-radius: 14px;
-        border-bottom: 6px solid var(--gold);
-        box-shadow: 0 4px 18px rgba(20, 33, 61, 0.18);
-        padding: 48px 32px 40px;
+
+    /* התאמת כותרת האתר (Hero) להדפסה */
+    .hero {
+        margin-top: 0 !important;
+        padding: 24px 20px !important;
+        box-shadow: none !important;
+        border: 1px solid var(--line-strong) !important;
+        border-bottom: 4px solid var(--gold) !important;
+        margin-bottom: 20px !important;
     }
-    .lock-title {
-        font-family: 'Frank Ruhl Libre', serif;
-        font-weight: 900;
-        font-size: 34px;
-        color: #ffffff;
-        margin: 0;
+
+    .hero h1 {
+        font-size: 2.6rem !important;
+        margin-bottom: 10px !important;
     }
-    .lock-title span {
-        color: var(--gold-bright);
+
+    /* מצב 1: הדפסת לוח השנה החודשי */
+    body.print-mode-calendar .view {
+        display: none !important;
     }
-    .lock-notice {
-        font-size: 17px;
-        font-weight: 500;
-        color: var(--navy);
-        line-height: 1.9;
-        margin: 32px 10px 34px;
-        text-shadow:
-            0 1px 0 #fff,
-            0 0 14px rgba(255, 255, 255, 0.9),
-            0 0 28px rgba(255, 255, 255, 0.75);
+
+    body.print-mode-calendar #calendar {
+        display: block !important;
     }
-    .lock-form-wrap {
+
+    body.print-mode-calendar #prevMonth,
+    body.print-mode-calendar #nextMonth,
+    body.print-mode-calendar #printCalendarBtn {
+        display: none !important;
+    }
+
+    body.print-mode-calendar .calendar-head {
+        justify-content: center !important;
+        border: none !important;
+        padding: 4px 0 12px !important;
+        margin-bottom: 8px !important;
+    }
+
+    body.print-mode-calendar .calendar-title {
+        font-size: 1.6rem !important;
+    }
+
+    body.print-mode-calendar .calendar-scroll {
+        overflow: visible !important;
+        box-shadow: none !important;
+    }
+
+    body.print-mode-calendar .calendar-grid {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    body.print-mode-calendar .day {
+        min-height: 85px !important;
+        page-break-inside: avoid;
+    }
+
+    /* מצב 2: הדפסת חלונית חתונה בודדת */
+    body.print-mode-wedding .view {
+        display: none !important;
+    }
+
+    body.print-mode-wedding #singleWeddingPrintArea {
+        display: block !important;
+        max-width: 650px;
+        margin: 24px auto 0;
         background: #ffffff;
-        border-radius: 14px;
-        box-shadow: 0 2px 10px rgba(20, 33, 61, 0.08);
-        border: 1px solid #e2dfd7;
-        padding: 32px 28px;
+        border: 2px solid var(--navy);
+        border-top: 6px solid var(--gold);
+        border-radius: var(--radius);
+        padding: 28px 32px;
     }
-    .lock-form-label {
-        font-size: 14px;
-        color: var(--text-muted);
-        margin: 0 0 14px;
-    }
-    input[type="password"] {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 15px 16px;
-        font-size: 19px;
-        letter-spacing: 2px;
-        text-align: center;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        outline: none;
+
+    body.print-mode-wedding #singleWeddingPrintArea .print-wedding-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 16px;
         margin-bottom: 16px;
-        direction: ltr;
-        background: #fff;
     }
-    input[type="password"]:focus { border-color: var(--gold); }
-    button {
+
+    body.print-mode-wedding #singleWeddingPrintArea .print-groom-name {
+        font-family: 'Frank Ruhl Libre', serif;
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+        margin: 0;
+    }
+
+    body.print-mode-wedding #singleWeddingPrintArea .print-category-tag {
+        background: var(--gold-light);
+        color: var(--gold);
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 0.95rem;
+    }
+
+    body.print-mode-wedding #singleWeddingPrintArea .row {
+        font-size: 1.1rem;
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 700px) {
+    .shell {
+        padding-inline: 14px;
+    }
+    .hero {
+        padding: 36px 20px;
+        margin-top: 14px;
+    }
+    .tabs {
+        justify-content: flex-start;
+    }
+    .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .toolbar-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search, .sort-select {
         width: 100%;
-        padding: 15px 16px;
-        font-size: 17px;
-        font-weight: 600;
-        border: none;
-        border-radius: 8px;
-        background: var(--navy);
-        color: #fff;
-        cursor: pointer;
     }
-    button:hover:not(:disabled) { background: var(--navy-light); }
-    button:disabled { opacity: 0.6; cursor: default; }
-    .lock-error {
-        color: #dc2626;
-        font-size: 14px;
-        margin-top: 12px;
-        min-height: 18px;
+    .form-grid, .contact-wrap {
+        grid-template-columns: 1fr;
     }
-    .shake { animation: lockShake 0.35s; }
-    @keyframes lockShake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-8px); }
-        75% { transform: translateX(8px); }
+    .field.full {
+        grid-column: auto;
     }
-    .bg-photos {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        overflow: hidden;
-        pointer-events: none;
+    .calendar-grid {
+        min-width: 680px;
     }
-    .bg-photo {
-        position: absolute;
-        width: 280px;
-        background: linear-gradient(135deg, #e3c687 0%, var(--gold) 55%, #7d6128 100%);
-        padding: 12px;
-        border-radius: 14px;
-        box-shadow:
-            0 24px 50px rgba(20, 33, 61, 0.38),
-            0 4px 14px rgba(20, 33, 61, 0.22),
-            inset 0 0 0 1px rgba(255, 255, 255, 0.35);
-        animation-name: photoFloat;
-        animation-timing-function: ease-in-out;
-        animation-iteration-count: infinite;
-        will-change: transform;
+    .calendar-scroll {
+        overflow-x: auto;
     }
-    .bg-photo img {
-        display: block;
-        width: 100%;
-        height: 230px;
-        object-fit: cover;
-        border-radius: 7px;
-        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    .day {
+        min-height: 95px;
     }
-    .bg-photo--1 { --r: -9deg; top: 4%;   left: 2%;             animation-duration: 6s;   }
-    .bg-photo--2 { --r: 7deg;  top: 5%;   right: 2%;            animation-duration: 6.6s; animation-delay: .4s; }
-    .bg-photo--3 { --r: 6deg;  top: 40%;  left: 0%;   width: 300px; animation-duration: 7.2s; animation-delay: .9s; }
-    .bg-photo--4 { --r: -6deg; top: 42%;  right: 0%;  width: 300px; animation-duration: 6.9s; animation-delay: .2s; }
-    .bg-photo--5 {
-        --r: 3deg;
-        width: 260px;
-        bottom: 3%;
-        left: 50%;
-        margin-left: -130px;
-        animation-duration: 7.5s;
-        animation-delay: .7s;
+    .section-head {
+        align-items: flex-start;
+        gap: 6px;
+        flex-direction: column;
     }
-    @keyframes photoFloat {
-        0%   { transform: rotate(var(--r)) translate(0, 0); }
-        50%  { transform: rotate(calc(var(--r) + 2.5deg)) translate(8px, -22px); }
-        100% { transform: rotate(var(--r)) translate(0, 0); }
+    .drive-frame-wrapper {
+        padding: 10px;
     }
-    @media (max-width: 760px) {
-        .bg-photo { width: 170px; }
-        .bg-photo img { height: 140px; }
-        .bg-photo--3, .bg-photo--4 { display: none; }
-        .bg-photo--1 { top: 2%; left: 1%; }
-        .bg-photo--2 { top: 3%; right: 1%; }
-        .bg-photo--5 { width: 190px; margin-left: -95px; bottom: 1%; }
-        @keyframes photoFloat {
-            0%   { transform: rotate(var(--r)) translate(0, 0); }
-            50%  { transform: rotate(calc(var(--r) + 2deg)) translate(5px, -12px); }
-            100% { transform: rotate(var(--r)) translate(0, 0); }
-        }
+    .meorasim-item {
+        height: 100px;
     }
-    @media (prefers-reduced-motion: reduce) {
-        .bg-photo { animation: none; transform: rotate(var(--r)); }
-    }
-    #siteFrame {
-        display: none;
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        border: 0;
-    }
+}
 </style>
 </head>
 <body>
+<main class="shell">
+<header class="hero"><div><div class="eyebrow">התשפ״ז</div><h1>יומן <br>השמחות</h1><p>כל השמחות, הזמנים והפרטים — במקום אחד.</p></div></header>
 
-<div class="bg-photos" aria-hidden="true">
-    <div class="bg-photo bg-photo--1"><img src="חתונה1.png" alt="" onerror="this.closest('.bg-photo').style.display='none'"></div>
-    <div class="bg-photo bg-photo--2"><img src="חתונה2.png" alt="" onerror="this.closest('.bg-photo').style.display='none'"></div>
-    <div class="bg-photo bg-photo--3"><img src="חתונה3.png" alt="" onerror="this.closest('.bg-photo').style.display='none'"></div>
-    <div class="bg-photo bg-photo--4"><img src="חתונה4.png" alt="" onerror="this.closest('.bg-photo').style.display='none'"></div>
-    <div class="bg-photo bg-photo--5"><img src="חתונה5.png" alt="" onerror="this.closest('.bg-photo').style.display='none'"></div>
+<!-- אזור ייעודי להדפסת חתונה בודדת -->
+<div id="singleWeddingPrintArea" aria-hidden="true"></div>
+
+<nav class="tabs" aria-label="קטגוריות">
+    <button class="tab active" data-view="yeshiva">בחורים</button>
+    <button class="tab" data-view="graduates">חיזוק ובוגרים</button>
+    <button class="tab" data-view="past">חתונות שעברו</button>
+    <button class="tab" data-view="calendar">לוח שנה</button>
+    <button class="tab" data-view="files">קבצים לחתן</button>
+    <button class="tab" data-view="contact">פנייה למנהל</button>
+</nav>
+
+<div class="toolbar" id="toolbar">
+    <div class="toolbar-actions" id="toolbarActions">
+        <button class="btn" id="addBtn">הוספת חתונה</button>
+    </div>
+    <div class="toolbar-filters">
+        <select class="sort-select" id="sortBy" aria-label="מיון לפי">
+            <option value="dateAsc">מיין לפי: תאריך (מהקרוב לרחוק)</option>
+            <option value="dateDesc">מיין לפי: תאריך (מהרחוק לקרוב)</option>
+            <option value="nameAsc">מיין לפי: שם החתן (א׳–ת׳)</option>
+            <option value="nameDesc">מיין לפי: שם החתן (ת׳–א׳)</option>
+        </select>
+        <input class="search" id="search" placeholder="חיפוש חתן, אולם או תזמורת" aria-label="חיפוש">
+    </div>
 </div>
 
-<div id="loginScreen">
-    <div class="lock-card">
-        <div class="lock-hero">
-            <p class="lock-title">ברוכים הבאים ל<span>יומן-השמחות</span></p>
+<section id="yeshiva" class="view active">
+    <div class="section-head"><h2>בחורים</h2><span id="yeshivaCount">טוען...</span></div>
+    <div class="grid" id="yeshivaGrid"></div>
+</section>
+
+<section id="graduates" class="view">
+    <div class="section-head"><h2>חיזוק ובוגרים</h2><span id="graduatesCount">טוען...</span></div>
+    <div class="grid" id="graduatesGrid"></div>
+</section>
+
+<section id="past" class="view">
+    <div class="section-head"><h2>חתונות שעברו</h2><span id="pastCount">טוען...</span></div>
+    <div class="grid" id="pastGrid"></div>
+</section>
+
+<section id="calendar" class="view">
+    <div class="section-head">
+        <div>
+            <h2>לוח שנה עברי / לועזי</h2>
+            <span class="no-print">לחיצה על שם החתן פותחת את כל הפרטים</span>
         </div>
-        <p class="lock-notice">אתר זה מיועד עבור בני וועד חמישי תשפ"ז בלבד<br>אנא ממכם כבדו את פרטיותינו</p>
-        <div class="lock-form-wrap">
-            <p class="lock-form-label">להמשך יש להקיש קוד סודי</p>
-            <form id="loginForm" autocomplete="off">
-                <input type="password" id="codeInput" placeholder="קוד כניסה" inputmode="numeric" autofocus>
-                <button type="submit" id="submitBtn">כניסה</button>
-                <div class="lock-error" id="errorMsg"></div>
-            </form>
+        <button class="btn ghost small no-print" id="printCalendarBtn" type="button">🖨️ הדפסת לוח החודש</button>
+    </div>
+    <div class="calendar-legend">
+        <div class="legend-item"><span class="legend-dot yeshiva"></span><span>בחורים</span></div>
+        <div class="legend-item"><span class="legend-dot graduates"></span><span>חיזוק ובוגרים</span></div>
+    </div>
+    <div class="calendar-head">
+        <button class="btn ghost small" id="nextMonth">החודש הבא</button>
+        <strong class="calendar-title" id="calendarTitle"></strong>
+        <button class="btn ghost small" id="prevMonth">החודש הקודם</button>
+    </div>
+    <div class="calendar-scroll">
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+    <div class="undated" id="undated"></div>
+</section>
+
+<!-- לשונית קבצים לחתן - חלונית דרייב מרוכזת בלבד -->
+<section id="files" class="view">
+    <div class="section-head">
+        <h2>קבצים לחתן</h2>
+        <span>לחיצה על קובץ פותחת אותו בתצוגת גוגל דרייב עם אפשרות הורדה</span>
+    </div>
+
+    <div class="drive-window-card">
+        <div class="drive-window-header">
+            <span class="drive-window-title">תיקיית קבצים לחתן</span>
+            <div style="display:flex; gap:10px;">
+                <a class="btn small" href="https://drive.google.com/drive/folders/1U9QFV_jt3zFmxsM51i-HPRPv84gYeeb3?usp=sharing" target="_blank" rel="noopener">פתיחה והורדה ב-Google Drive ↗</a>
+            </div>
+        </div>
+        <div class="drive-frame-wrapper">
+            <iframe class="drive-embed-frame" src="https://drive.google.com/embeddedfolderview?id=1U9QFV_jt3zFmxsM51i-HPRPv84gYeeb3#grid" title="קבצים לחתן"></iframe>
+        </div>
+    </div>
+</section>
+
+<section id="contact" class="view">
+    <div class="contact-wrap" id="contactWrap">
+        <div class="contact-copy">
+            <div class="eyebrow">יש לכם עדכון?</div>
+            <h2>פנייה למנהל המערכת</h2>
+            <p>אפשר לשלוח תיקון, בקשה או פרט שחסר. ההודעה נשלחת ישירות למייל ההנהלה.</p>
+        </div>
+        <form id="contactForm">
+            <div class="form-grid">
+                <div class="field"><label>שם</label><input name="name" required></div>
+                <div class="field"><label>טלפון או דוא״ל</label><input name="contact" required></div>
+                <div class="field full"><label>נושא</label><input name="topic" required></div>
+                <div class="field full"><label>הודעה</label><textarea name="message" rows="5" required></textarea></div>
+            </div>
+            <button class="btn" type="submit" style="margin-top: 16px;">שליחת הפנייה</button>
+            <p class="status" id="contactStatus"></p>
+        </form>
+    </div>
+</section>
+
+<!-- 1. אזור מאורסים (מופיע ראשון, על גבי רקע האתר ללא חלונית) -->
+<div id="meorasimContainer" class="meorasim-inline-section" hidden>
+    <iframe id="meorasimFrame" class="meorasim-frame" title="מאורסים" scrolling="no" allowtransparency="true"></iframe>
+</div>
+
+<!-- פס גלילה חלק ורציף למודעות מאורסים (ללא קטיעות) -->
+<div id="meorasimTickerContainer" class="meorasim-strip" hidden>
+    <div id="meorasimTrack" class="meorasim-track"></div>
+</div>
+
+<!-- 2. חלון וירטואלי לתצוגת פרסומות.html (מופיע מתחת למאורסים) -->
+<div id="adsContainer" class="ads-window" hidden>
+    <iframe id="adsFrame" class="ads-frame" title="פרסומות" scrolling="no"></iframe>
+</div>
+</main>
+
+<!-- חלון הוספה / עריכת חתונה -->
+<div class="modal" id="weddingModal">
+    <div class="dialog">
+        <h2 id="modalTitle">הוספת חתונה</h2>
+        <form id="weddingForm">
+            <input type="hidden" id="editingId">
+            <div class="form-grid">
+                <div class="field"><label>קטגוריה</label><select id="category" required><option value="yeshiva">בחורים</option><option value="graduates">חיזוק ובוגרים</option></select></div>
+                <div class="field"><label>שם החתן</label><input id="groomName" required></div>
+                <div class="field"><label>תאריך לועזי</label><input type="date" id="eventDate" required></div>
+                <div class="field"><label>תאריך עברי (מתעדכן אוטומטית דו-כיוונית)</label><input id="weddingDate" required placeholder="י״ט תשרי התשפ״ז"></div>
+                <div class="field"><label>יום בשבוע</label><select id="dayOfWeek" required><option>ראשון</option><option>שני</option><option>שלישי</option><option>רביעי</option><option>חמישי</option><option>שישי</option><option>שבת</option></select></div>
+                <div class="field"><label>אולם ועיר</label><input id="location" required></div>
+                <div class="field"><label>שעה מרכזית</label><input id="chuppahTime"></div>
+                <div class="field"><label>ריקודים ראשונים</label><input id="firstDance"></div>
+                <div class="field"><label>ריקודים שניים</label><input id="secondDance"></div>
+                <div class="field"><label>תזמורת / די־ג׳יי</label><input id="orchestra"></div>
+                <div class="field"><label>זמני הסעות</label><input id="transportation"></div>
+                <div class="field"><label>סיסמה לעריכת החתונה</label><input type="password" id="editPassword" required placeholder="בחר סיסמה לעריכה עתידית"></div>
+            </div>
+            <div class="actions">
+                <button class="btn" type="submit" id="saveBtn">שמירת חתונה</button>
+                <button class="btn ghost close" type="button">ביטול</button>
+            </div>
+            <p class="status" id="formStatus"></p>
+        </form>
+    </div>
+</div>
+
+<!-- חלון אימות סיסמה לעריכה -->
+<div class="modal" id="passwordModal">
+    <div class="dialog small-dialog">
+        <h2>אימות סיסמת עריכה</h2>
+        <form id="passwordForm">
+            <div class="field">
+                <label>הזן את הסיסמה שנבחרה בעת יצירת החתונה:</label>
+                <input type="password" id="verifyPasswordInput" required autocomplete="off">
+            </div>
+            <p class="status" id="passwordStatus"></p>
+            <div class="actions">
+                <button class="btn" type="submit">אישור</button>
+                <button class="btn ghost close" type="button">ביטול</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- חלון צפייה בפרטים מלאים -->
+<div class="modal" id="detailModal">
+    <div class="dialog">
+        <h2 id="detailTitle"></h2>
+        <div id="detailBody"></div>
+        <div class="actions">
+            <button class="btn" id="printDetailBtn" type="button">🖨️ הדפסת פרטי חתונה</button>
+            <button class="btn ghost close" type="button">סגירה</button>
         </div>
     </div>
 </div>
 
-<iframe id="siteFrame" title="יומן-השמחות"></iframe>
-
 <script>
-(function () {
-    var CONTENT_URL = "content.enc.json";
+const API = 'https://script.google.com/macros/s/AKfycbxSp2jqhlCrB4HJ0m0QtDYnzE7PeNSLMGEhWPPdHPFn5Y_LvZdRtCICiZq4LhgpoFoN8A/exec'; 
+const CACHE_KEY = 'weddings_cache_v1';
 
-    function b64ToBytes(b64) {
-        var bin = atob(b64);
-        var bytes = new Uint8Array(bin.length);
-        for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        return bytes;
+const fields = ['category','groomName','dayOfWeek','weddingDate','eventDate','location','chuppahTime','firstDance','secondDance','orchestra','transportation','editPassword'];
+let data = [], monthCursor = new Date(), pendingEditId = null, currentDetailId = null;
+
+const $ = s => document.querySelector(s);
+const esc = v => { const e = document.createElement('span'); e.textContent = v || ''; return e.innerHTML; };
+const iso = d => { const x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0,10); };
+const today = () => iso(new Date());
+
+// --- פונקציות גימטריה ותאריך עברי ---
+
+function numberToHebrewLetters(num, addQuotes = true) {
+    num = parseInt(num, 10);
+    if (isNaN(num) || num <= 0) return '';
+    if (num >= 1000) num = num % 1000;
+
+    const hundreds = ['', 'ק', 'ר', 'ש', 'ת', 'תק', 'תר', 'תש', 'תת', 'תתק'];
+    const tens = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+    const units = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+
+    let h = Math.floor(num / 100);
+    let rem = num % 100;
+    let res = hundreds[h] || '';
+
+    if (rem === 15) {
+        res += 'טו';
+    } else if (rem === 16) {
+        res += 'טז';
+    } else {
+        res += (tens[Math.floor(rem / 10)] || '') + (units[rem % 10] || '');
     }
 
-    async function deriveKey(code, saltBytes, iterations) {
-        var baseKey = await crypto.subtle.importKey(
-            "raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveKey"]
-        );
-        return crypto.subtle.deriveKey(
-            { name: "PBKDF2", salt: saltBytes, iterations: iterations, hash: "SHA-256" },
-            baseKey,
-            { name: "AES-GCM", length: 256 },
-            false,
-            ["decrypt"]
-        );
+    if (!addQuotes) return res;
+    if (res.length === 1) return res + '׳';
+    if (res.length > 1) return res.slice(0, -1) + '״' + res.slice(-1);
+    return res;
+}
+
+function formatHebrewYear(yearNum) {
+    const n = parseInt(yearNum, 10);
+    if (isNaN(n)) return '';
+    return 'ה' + numberToHebrewLetters(n % 1000, true);
+}
+
+function getHebrewDateParts(gregDate) {
+    const parts = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }).formatToParts(gregDate);
+
+    const dayNum = parseInt(parts.find(p => p.type === 'day')?.value || '1', 10);
+    const monthName = parts.find(p => p.type === 'month')?.value || '';
+    const yearNum = parseInt(parts.find(p => p.type === 'year')?.value || '5787', 10);
+
+    return {
+        dayNum,
+        monthName,
+        yearNum,
+        dayHeb: numberToHebrewLetters(dayNum, true),
+        yearHeb: formatHebrewYear(yearNum),
+        fullHeb: `${numberToHebrewLetters(dayNum, true)} ${monthName} ${formatHebrewYear(yearNum)}`
+    };
+}
+
+function parseGematria(str) {
+    const clean = str.replace(/['"׳״]/g, '').trim();
+    if (/^\d+$/.test(clean)) return parseInt(clean, 10);
+    const map = { א:1, ב:2, ג:3, ד:4, ה:5, ו:6, ז:7, ח:8, ט:9, י:10, כ:20, ך:20, ל:30, מ:40, ם:40, נ:50, ן:50, ס:60, ע:70, פ:80, ף:80, צ:90, ץ:90, ק:100, ר:200, ש:300, ת:400 };
+    let sum = 0;
+    for (let i = 0; i < clean.length; i++) {
+        const ch = clean[i];
+        if (i === 0 && ch === 'ה' && clean.length >= 3) continue;
+        sum += map[ch] || 0;
     }
+    return sum;
+}
 
-    var form = document.getElementById("loginForm");
-    var input = document.getElementById("codeInput");
-    var errorMsg = document.getElementById("errorMsg");
-    var submitBtn = document.getElementById("submitBtn");
-    var lockCard = document.querySelector(".lock-card");
-    var loginScreen = document.getElementById("loginScreen");
-    var siteFrame = document.getElementById("siteFrame");
+function normalizeMonth(m) {
+    return m.replace(/^ב/, '').replace(/מרחשוון|מרחשון|חשון/g, 'חשוון').replace(/סיון/g, 'סיוון').replace(/['"׳״]/g, '').trim();
+}
 
-    form.addEventListener("submit", async function (ev) {
-        ev.preventDefault();
-        var code = input.value;
-        if (!code) return;
+function hebrewToGregorianDate(hebStr) {
+    const tokens = hebStr.trim().split(/\s+/);
+    if (tokens.length < 2) return null;
 
-        errorMsg.textContent = "";
-        submitBtn.disabled = true;
-        submitBtn.textContent = "בודק...";
+    const dayNum = parseGematria(tokens[0]);
+    if (!dayNum || dayNum < 1 || dayNum > 30) return null;
 
-        try {
-            var res = await fetch(CONTENT_URL, { cache: "no-store" });
-            if (!res.ok) throw new Error("content fetch failed");
-            var data = await res.json();
+    let yearNum = null;
+    let monthTokens = tokens.slice(1);
 
-            var salt = b64ToBytes(data.salt);
-            var iv = b64ToBytes(data.iv);
-            var ciphertext = b64ToBytes(data.ciphertext);
-
-            var key = await deriveKey(code, salt, data.iterations);
-            var decrypted = await crypto.subtle.decrypt(
-                { name: "AES-GCM", iv: iv }, key, ciphertext
-            );
-
-            var html = new TextDecoder().decode(decrypted);
-
-            loginScreen.style.display = "none";
-            siteFrame.style.display = "block";
-            siteFrame.srcdoc = html;
-        } catch (err) {
-            errorMsg.textContent = "קוד שגוי, נסה/י שוב";
-            lockCard.classList.remove("shake");
-            void lockCard.offsetWidth;
-            lockCard.classList.add("shake");
-            input.value = "";
-            input.focus();
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = "כניסה";
+    if (tokens.length >= 3) {
+        const lastTokenVal = parseGematria(tokens[tokens.length - 1]);
+        if (lastTokenVal > 30) {
+            yearNum = lastTokenVal < 1000 ? 5000 + lastTokenVal : lastTokenVal;
+            monthTokens = tokens.slice(1, -1);
         }
-    });
-})();
-</script>
+    }
 
+    if (!yearNum) {
+        yearNum = getHebrewDateParts(new Date()).yearNum;
+    }
+
+    const targetMonth = normalizeMonth(monthTokens.join(' '));
+    const approxGregYear = yearNum - 3760;
+    const startSearch = new Date(approxGregYear - 1, 7, 1, 12, 0, 0);
+    const endSearch = new Date(approxGregYear + 1, 9, 1, 12, 0, 0);
+
+    for (let d = new Date(startSearch); d <= endSearch; d.setDate(d.getDate() + 1)) {
+        const p = getHebrewDateParts(d);
+        if (p.yearNum === yearNum && p.dayNum === dayNum && normalizeMonth(p.monthName) === targetMonth) {
+            return new Date(d);
+        }
+    }
+    return null;
+}
+
+// --- פונקציות מיון ותצוגה ---
+
+function sortWeddings(list) {
+    const mode = $('#sortBy').value;
+    return [...list].sort((a, b) => {
+        if (mode === 'nameAsc') {
+            return (a.groomName || '').localeCompare(b.groomName || '', 'he');
+        }
+        if (mode === 'nameDesc') {
+            return (b.groomName || '').localeCompare(a.groomName || '', 'he');
+        }
+        const dateA = a.eventDate || '9999-12-31';
+        const dateB = b.eventDate || '9999-12-31';
+        if (mode === 'dateDesc') {
+            return dateB.localeCompare(dateA);
+        }
+        return dateA.localeCompare(dateB);
+    });
+}
+
+function proximity(w) {
+    if (!w.eventDate) return '';
+    const now = new Date(today() + 'T12:00:00');
+    const d = new Date(w.eventDate + 'T12:00:00');
+    const days = Math.round((d - now) / 864e5);
+    const b = [];
+    if (days === 0) b.push('<span class="badge">היום</span>');
+    if (days > 0 && days < 7) b.push('<span class="badge week">השבוע</span>');
+    if (days >= 0 && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) b.push('<span class="badge month">החודש</span>');
+    return b.join('');
+}
+
+function detailRows(w) {
+    return `<div class="details"><div class="row"><span class="label">תאריך</span><span>יום ${esc(w.dayOfWeek)}, ${esc(w.weddingDate)}</span></div><div class="row"><span class="label">מיקום</span><span>${esc(w.location) || '—'}</span></div><div class="row"><span class="label">שעה מרכזית</span><span>${esc(w.chuppahTime) || '—'}</span></div><div class="row"><span class="label">ריקודים א׳ / ב׳</span><span>${esc(w.firstDance) || '—'} / ${esc(w.secondDance) || '—'}</span></div><div class="row"><span class="label">תזמורת</span><span>${esc(w.orchestra) || '—'}</span></div><div class="row"><span class="label">הסעות</span><span>${esc(w.transportation) || '—'}</span></div></div>`;
+}
+
+function card(w) {
+    return `<article class="card">
+        <div class="card-header-row">
+            <div class="badges">${proximity(w)}</div>
+            <div class="card-actions-top">
+                <button class="icon-action-btn" data-print-wedding="${esc(w.ID)}" title="הדפסת חתונה" aria-label="הדפסת חתונה">🖨️</button>
+                <button class="icon-action-btn" data-edit="${esc(w.ID)}" title="עריכת חתונה" aria-label="עריכת חתונה">✎</button>
+            </div>
+        </div>
+        <div class="card-top">
+            <span class="name">${esc(w.groomName)}</span>
+            <span class="date">יום ${esc(w.dayOfWeek)}<br>${esc(w.weddingDate)}</span>
+        </div>
+        <button class="edit" data-detail="${esc(w.ID)}">צפה בפרטים מלאים</button>
+    </article>`;
+}
+
+function render() {
+    const q = $('#search').value.trim().toLowerCase();
+    const filtered = data.filter(w => [w.groomName, w.location, w.orchestra, w.weddingDate].some(v => (v || '').toLowerCase().includes(q)) && w.groomName);
+    const up = filtered.filter(w => !w.eventDate || w.eventDate >= today());
+    
+    const groups = {
+        yeshiva: sortWeddings(up.filter(w => w.category === 'yeshiva')),
+        graduates: sortWeddings(up.filter(w => w.category === 'graduates')),
+        past: sortWeddings(filtered.filter(w => w.eventDate && w.eventDate < today()))
+    };
+
+    for (const [k, v] of Object.entries(groups)) {
+        $('#' + k + 'Grid').innerHTML = v.map(card).join('') || '<div class="empty">אין חתונות להצגה כרגע</div>';
+        $('#' + k + 'Count').textContent = v.length + ' חתונות';
+    }
+    renderCalendar();
+}
+
+// --- לוח שנה ---
+
+function renderCalendar() {
+    const y = monthCursor.getFullYear(), m = monthCursor.getMonth();
+    const first = new Date(y, m, 1), start = new Date(y, m, 1 - first.getDay());
+    
+    const midMonthHeb = getHebrewDateParts(new Date(y, m, 15));
+    $('#calendarTitle').textContent = `${midMonthHeb.monthName} ${midMonthHeb.yearHeb}`;
+    
+    let out = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'].map(x => `<div class="weekday">${x}</div>`).join('');
+    for (let i = 0; i < 42; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        const key = iso(d);
+        
+        const events = data
+            .filter(w => w.eventDate === key && w.groomName)
+            .sort((a, b) => {
+                if (a.category === b.category) return 0;
+                return a.category === 'yeshiva' ? -1 : 1;
+            });
+
+        const hebDay = getHebrewDateParts(d).dayHeb;
+        out += `<div class="day ${d.getMonth() !== m ? 'out' : ''} ${key === today() ? 'today' : ''}">
+            <div class="day-num"><span>${hebDay}</span><span>${d.getDate()}</span></div>
+            ${events.map(w => `<button class="cal-event ${w.category === 'graduates' ? 'graduates-event' : 'yeshiva-event'}" data-detail="${esc(w.ID)}">${esc(w.groomName)}</button>`).join('')}
+        </div>`;
+    }
+    $('#calendarGrid').innerHTML = out;
+    
+    const undated = data
+        .filter(w => !w.eventDate && w.groomName)
+        .sort((a, b) => (a.category === 'yeshiva' ? -1 : 1));
+    $('#undated').innerHTML = undated.length ? `<strong>אירועים ללא תאריך לועזי (לא יופיעו בלוח)</strong><div class="badges" style="margin-top:8px;">${undated.map(w => `<button class="cal-event ${w.category === 'graduates' ? 'graduates-event' : 'yeshiva-event'}" data-detail="${esc(w.ID)}">${esc(w.groomName)} ·${esc(w.weddingDate)}</button>`).join('')}</div>` : '';
+}
+
+// --- פונקציות הדפסה ---
+
+function printCurrentCalendarMonth() {
+    document.body.classList.remove('print-mode-wedding');
+    document.body.classList.add('print-mode-calendar');
+    window.print();
+}
+
+function printSingleWedding(id) {
+    const w = data.find(x => x.ID === id);
+    if (!w) return;
+
+    const categoryLabel = w.category === 'graduates' ? 'חיזוק ובוגרים' : 'בחורים';
+    const printArea = $('#singleWeddingPrintArea');
+    printArea.innerHTML = `
+        <div class="print-wedding-header">
+            <h2 class="print-groom-name">שמחת החתן: ${esc(w.groomName)}</h2>
+            <span class="print-category-tag">${categoryLabel}</span>
+        </div>
+        ${detailRows(w)}
+    `;
+
+    document.body.classList.remove('print-mode-calendar');
+    document.body.classList.add('print-mode-wedding');
+    window.print();
+}
+
+window.addEventListener('afterprint', () => {
+    document.body.classList.remove('print-mode-calendar', 'print-mode-wedding');
+});
+
+function openWedding(weddingToEdit = null) {
+    $('#weddingForm').reset();
+    $('#formStatus').textContent = '';
+    if (weddingToEdit) {
+        $('#modalTitle').textContent = 'עריכת חתונה';
+        $('#editingId').value = weddingToEdit.ID;
+        fields.forEach(f => {
+            if ($('#' + f)) $('#' + f).value = weddingToEdit[f] || '';
+        });
+    } else {
+        $('#modalTitle').textContent = 'הוספת חתונה';
+        $('#editingId').value = '';
+    }
+    $('#weddingModal').classList.add('open');
+}
+
+function requestEditPassword(id) {
+    const w = data.find(x => x.ID === id);
+    if (!w) return;
+    pendingEditId = id;
+    $('#passwordForm').reset();
+    $('#passwordStatus').textContent = '';
+    $('#passwordModal').classList.add('open');
+    setTimeout(() => $('#verifyPasswordInput').focus(), 50);
+}
+
+$('#passwordForm').onsubmit = e => {
+    e.preventDefault();
+    const w = data.find(x => x.ID === pendingEditId);
+    if (!w) return;
+    const inputPass = $('#verifyPasswordInput').value;
+    if (w.editPassword && inputPass === String(w.editPassword)) {
+        $('#passwordModal').classList.remove('open');
+        openWedding(w);
+    } else if (!w.editPassword) {
+        $('#passwordStatus').textContent = 'לחתונה זו לא הוגדרה סיסמה בעת יצירתה.';
+    } else {
+        $('#passwordStatus').textContent = 'סיסמה שגויה, נסה שנית.';
+    }
+};
+
+function showDetail(id) {
+    const w = data.find(x => x.ID === id);
+    if (!w) return;
+    currentDetailId = id;
+    $('#printDetailBtn').style.display = 'inline-flex';
+    $('#detailTitle').textContent = w.groomName;
+    $('#detailBody').innerHTML = `<div class="badges" style="margin-bottom:12px;">${proximity(w)}</div>` + detailRows(w);
+    $('#detailModal').classList.add('open');
+}
+
+// --- טעינה מהירה מהדפדפן + סנכרון שקט מול השרת ---
+
+function saveToCache(arr) {
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(arr));
+    } catch {}
+}
+
+async function load() {
+    if (API === 'הכנס_את_הקישור_שלך_כאן') {
+        ['yeshivaGrid', 'graduatesGrid', 'pastGrid'].forEach(id => $('#' + id).innerHTML = '<div class="empty">שגיאה: לא הוגדר קישור API</div>');
+        return;
+    }
+
+    let hasCached = false;
+    const cachedRaw = localStorage.getItem(CACHE_KEY);
+    if (cachedRaw) {
+        try {
+            const parsed = JSON.parse(cachedRaw);
+            if (Array.isArray(parsed)) {
+                data = parsed;
+                hasCached = true;
+                render();
+            }
+        } catch {}
+    }
+
+    try {
+        const r = await fetch(API, { cache: 'no-store' });
+        const freshData = await r.json();
+        if (Array.isArray(freshData)) {
+            const freshRaw = JSON.stringify(freshData);
+            if (freshRaw !== cachedRaw) {
+                data = freshData;
+                saveToCache(freshData);
+                render();
+            }
+        }
+    } catch {
+        if (!hasCached) {
+            ['yeshivaGrid', 'graduatesGrid', 'pastGrid'].forEach(id => $('#' + id).innerHTML = '<div class="empty">לא הצלחנו לטעון את הנתונים מהשרת</div>');
+        }
+    }
+}
+
+function autoResizeIframe(frame, makeTransparent = false) {
+    try {
+        const doc = frame.contentDocument || frame.contentWindow.document;
+        if (doc && doc.body) {
+            if (makeTransparent) {
+                doc.documentElement.style.background = 'transparent';
+                doc.body.style.background = 'transparent';
+                // הזרקת האצת חומרה לאנימציות פנימיות בתוך מאורסים.html כדי למנוע תנועה קטועה
+                if (!doc.getElementById('smooth-anim-fix')) {
+                    const style = doc.createElement('style');
+                    style.id = 'smooth-anim-fix';
+                    style.textContent = `
+                        * { -webkit-font-smoothing: antialiased; }
+                        img { decoding: async; transform: translateZ(0); }
+                    `;
+                    doc.head.appendChild(style);
+                }
+            }
+            const height = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+            if (height > 0) {
+                frame.style.height = (height + 8) + 'px';
+            }
+        }
+    } catch {}
+}
+
+async function loadAdsWindow() {
+    const adsFile = 'פרסומות.html';
+    try {
+        const res = await fetch(adsFile, { method: 'HEAD', cache: 'no-cache' });
+        if (res.ok) {
+            const container = $('#adsContainer');
+            const frame = $('#adsFrame');
+            frame.src = adsFile;
+            container.hidden = false;
+            frame.onload = () => autoResizeIframe(frame, false);
+        }
+    } catch {}
+}
+
+// --- מנוע גלילה חלק (60FPS ללא קטיעות) עבור מאורסים ---
+
+function startSmoothTicker(track) {
+    let offset = 0;
+    let isPaused = false;
+    let lastTime = performance.now();
+    const speedPxPerSec = 42; // מהירות גלילה נעימה ואחידה
+
+    const container = $('#meorasimTickerContainer');
+    container.addEventListener('mouseenter', () => { isPaused = true; });
+    container.addEventListener('mouseleave', () => {
+        isPaused = false;
+        lastTime = performance.now();
+    });
+
+    function step(now) {
+        const dt = (now - lastTime) / 1000;
+        lastTime = now;
+
+        if (!isPaused) {
+            const halfWidth = track.scrollWidth / 2;
+            if (halfWidth > 0) {
+                offset -= speedPxPerSec * dt;
+                if (Math.abs(offset) >= halfWidth) {
+                    offset += halfWidth;
+                }
+                track.style.transform = `translate3d(${offset}px, 0, 0)`;
+            }
+        }
+        requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+}
+
+async function loadMeorasimSection() {
+    const meorasimFile = 'מאורסים.html';
+
+    // ניסיון 1: הצגת קובץ מאורסים.html על גבי רקע האתר אם הקובץ קיים
+    try {
+        const res = await fetch(meorasimFile, { method: 'HEAD', cache: 'no-cache' });
+        if (res.ok) {
+            const container = $('#meorasimContainer');
+            const frame = $('#meorasimFrame');
+            frame.src = meorasimFile;
+            container.hidden = false;
+            frame.onload = () => {
+                autoResizeIframe(frame, true);
+                try {
+                    const doc = frame.contentDocument || frame.contentWindow.document;
+                    if (doc && doc.body && window.ResizeObserver) {
+                        new ResizeObserver(() => autoResizeIframe(frame, true)).observe(doc.body);
+                    }
+                } catch {}
+            };
+            return;
+        }
+    } catch {}
+
+    // ניסיון 2 (גיבוי אוטומטי): פס גלילה חלק ורציף ממאגר ה-GitHub
+    const repoOwner = 'MORDECHAI-V';
+    const repoName = 'MEORASIM';
+    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+
+    try {
+        const res = await fetch(apiUrl);
+        if (!res.ok) return;
+        const files = await res.json();
+        if (!Array.isArray(files)) return;
+
+        const imageRegex = /\.(jpe?g|png|webp|gif|svg)$/i;
+        const images = files.filter(f => f.type === 'file' && imageRegex.test(f.name));
+        if (!images.length) return;
+
+        let baseList = [...images];
+        while (baseList.length < 10) {
+            baseList = baseList.concat(images);
+        }
+
+        // שכפול כפול מדויק ליצירת לולאה אינסופית ללא קפיצה
+        const loopList = [...baseList, ...baseList];
+        const track = $('#meorasimTrack');
+
+        track.innerHTML = loopList.map(img => `
+            <div class="meorasim-item" data-meorasim-img="${esc(img.download_url)}" title="לחץ להגדלה">
+                <img src="${esc(img.download_url)}" alt="מודעת מאורסים" loading="eager" decoding="async">
+            </div>
+        `).join('');
+
+        $('#meorasimTickerContainer').hidden = false;
+        startSmoothTicker(track);
+    } catch (err) {
+        console.warn('לא ניתן לטעון מודעות מאורסים:', err);
+    }
+}
+
+$('#addBtn').onclick = () => openWedding();
+$('#prevMonth').onclick = () => { monthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1); renderCalendar(); };
+$('#nextMonth').onclick = () => { monthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1); renderCalendar(); };
+$('#printCalendarBtn').onclick = () => printCurrentCalendarMonth();
+$('#printDetailBtn').onclick = () => {
+    if (currentDetailId) printSingleWedding(currentDetailId);
+};
+
+document.body.addEventListener('click', e => {
+    const printWeddingBtn = e.target.closest('[data-print-wedding]');
+    if (printWeddingBtn) {
+        printSingleWedding(printWeddingBtn.dataset.printWedding);
+        return;
+    }
+    const editBtn = e.target.closest('[data-edit]');
+    if (editBtn) {
+        requestEditPassword(editBtn.dataset.edit);
+        return;
+    }
+    const detailBtn = e.target.closest('[data-detail]');
+    if (detailBtn) {
+        showDetail(detailBtn.dataset.detail);
+        return;
+    }
+    const meorasimBtn = e.target.closest('[data-meorasim-img]');
+    if (meorasimBtn) {
+        const imgUrl = meorasimBtn.dataset.meorasimImg;
+        currentDetailId = null;
+        $('#printDetailBtn').style.display = 'none';
+        $('#detailTitle').textContent = 'מודעת מאורסים';
+        $('#detailBody').innerHTML = `<div style="text-align:center;"><img src="${esc(imgUrl)}" style="max-width:100%; max-height:70vh; border-radius:8px; border:1px solid var(--line);" alt="מודעת מאורסים"></div>`;
+        $('#detailModal').classList.add('open');
+        return;
+    }
+});
+
+document.querySelectorAll('.close').forEach(b => b.onclick = () => b.closest('.modal').classList.remove('open'));
+document.querySelectorAll('.modal').forEach(m => m.onclick = e => { if (e.target === m) m.classList.remove('open'); });
+
+// המרה אוטומטית: לועזי -> עברי (באותיות)
+$('#eventDate').onchange = e => {
+    if (!e.target.value) return;
+    const d = new Date(e.target.value + 'T12:00:00');
+    $('#weddingDate').value = getHebrewDateParts(d).fullHeb;
+    $('#dayOfWeek').value = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'][d.getDay()];
+};
+
+// המרה אוטומטית: עברי -> לועזי
+$('#weddingDate').onchange = e => {
+    const val = e.target.value.trim();
+    if (!val) return;
+    const greg = hebrewToGregorianDate(val);
+    if (greg) {
+        $('#eventDate').value = iso(greg);
+        $('#dayOfWeek').value = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'][greg.getDay()];
+        $('#weddingDate').value = getHebrewDateParts(greg).fullHeb;
+    }
+};
+
+// הוספה או עריכת חתונה (כולל עדכון מיידי של הזיכרון המקומי)
+$('#weddingForm').onsubmit = async e => {
+    e.preventDefault();
+    const editingId = $('#editingId').value;
+    const isEdit = Boolean(editingId);
+    const body = Object.fromEntries(fields.map(f => [f, $('#' + f).value]));
+    body.action = isEdit ? "edit_wedding" : "add_wedding";
+    body.ID = isEdit ? editingId : ('w_' + Date.now());
+
+    const btn = $('#saveBtn'), s = $('#formStatus');
+    btn.disabled = true;
+    s.className = 'status';
+    s.textContent = 'שומר במערכת...';
+    try {
+        const r = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(body)
+        });
+        const x = await r.json();
+        if (x.status !== 'success') throw Error(x.error);
+        
+        s.className = 'status ok';
+        s.textContent = isEdit ? 'החתונה עודכנה בהצלחה!' : 'החתונה נשמרה בהצלחה!';
+        if (isEdit) {
+            const idx = data.findIndex(item => item.ID === editingId);
+            if (idx !== -1) data[idx] = body;
+        } else {
+            data.push(body);
+        }
+        saveToCache(data);
+        render();
+        setTimeout(() => $('#weddingModal').classList.remove('open'), 1000);
+    } catch (x) {
+        s.className = 'status';
+        s.textContent = 'השליחה נכשלה, נסה שנית.';
+    } finally {
+        btn.disabled = false;
+    }
+};
+
+// טופס יצירת קשר
+$('#contactForm').onsubmit = async e => {
+    e.preventDefault();
+    const s = $('#contactStatus');
+    s.textContent = 'שולח...';
+    s.className = 'status';
+    
+    const formData = new FormData(e.target);
+    const payload = {
+        action: "contact_admin",
+        name: formData.get('name'),
+        contact: formData.get('contact'),
+        topic: formData.get('topic'),
+        message: formData.get('message')
+    };
+
+    try {
+        const r = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        });
+        const x = await r.json();
+        if (x.status !== 'success') throw 0;
+        
+        e.target.reset();
+        s.className = 'status ok';
+        s.textContent = 'הפנייה נשלחה בהצלחה להנהלה.';
+    } catch {
+        s.className = 'status';
+        s.textContent = 'השליחה נכשלה. נסו שוב.';
+    }
+};
+
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+    document.querySelectorAll('.tab,.view').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const view = t.dataset.view;
+    $('#' + view).classList.add('active');
+    $('#toolbar').style.display = (view === 'contact' || view === 'files') ? 'none' : 'flex';
+});
+
+$('#search').oninput = render;
+$('#sortBy').onchange = render;
+
+load();
+loadMeorasimSection();
+loadAdsWindow();
+</script>
 </body>
 </html>
