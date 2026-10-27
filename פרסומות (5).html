@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מודעת מאורסים - יהונתן כהן & תמר דינבצקי</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold-light: #fbf5b7;
+            --gold-mid: #d4af37;
+            --gold-dark: #aa771c;
+            --bg-dark: #0a0e17;
+            --card-bg: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1b2436 0%, #07090e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Frank Ruhl Libre', serif;
+            perspective: 1200px;
+            color: #fff;
+        }
+
+        /* קנבס אחורי לחלקיקי רקע */
+        #bg-particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* קנבס קדמי לקונפטי, זיקוקים, התזת יין, גלי הדף ושובל עכבר */
+        #fx-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* החלונית הרחבה והנמוכה - ממורכזת תמיד */
+        .engagement-card {
+            position: relative;
+            z-index: 10;
+            width: 92vw;
+            max-width: 1180px;
+            padding: 26px 55px;
+            background: linear-gradient(135deg, rgba(20, 26, 41, 0.96) 0%, rgba(10, 14, 23, 0.98) 100%);
+            border-radius: 20px;
+            box-shadow: 
+                0 25px 65px rgba(0, 0, 0, 0.85),
+                0 0 40px rgba(212, 175, 55, 0.22),
+                inset 0 0 2px rgba(212, 175, 55, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transform-style: preserve-3d;
+            animation: cardEntrance 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            overflow: hidden;
+        }
+
+        /* מסגרת זהב פנימית כפולה */
+        .card-inner-border {
+            position: absolute;
+            top: 14px;
+            bottom: 14px;
+            left: 14px;
+            right: 14px;
+            border: 2px solid rgba(212, 175, 55, 0.45);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .card-inner-border::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            bottom: 5px;
+            left: 5px;
+            right: 5px;
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            border-radius: 8px;
+        }
+
+        /* אפקט הברקה שחולף על פני הכרטיס */
+        .card-shimmer {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 235, 160, 0.08),
+                transparent
+            );
+            transform: skewX(-25deg);
+            animation: cardShimmer 7s infinite;
+            pointer-events: none;
+        }
+
+        /* עיטורי פינות בזהב */
+        .corner {
+            position: absolute;
+            width: 55px;
+            height: 55px;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.9;
+        }
+        .corner svg {
+            width: 100%;
+            height: 100%;
+            fill: url(#luxury-gold);
+        }
+        .corner-tl { top: 20px; left: 20px; }
+        .corner-tr { top: 20px; right: 20px; transform: scaleX(-1); }
+        .corner-bl { bottom: 20px; left: 20px; transform: scaleY(-1); }
+        .corner-br { bottom: 20px; right: 20px; transform: scale(-1, -1); }
+
+        /* כותרת: מאורסים */
+        .header-section {
+            opacity: 0;
+            animation: fadeInUp 0.9s ease forwards 0.3s;
+        }
+
+        .sub-header {
+            font-family: 'Heebo', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: var(--gold-mid);
+            margin-bottom: 2px;
+        }
+
+        .main-title {
+            font-size: 3.7rem;
+            font-weight: 900;
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shineText 4s linear infinite;
+            filter: drop-shadow(0 4px 12px rgba(212, 175, 55, 0.3));
+            line-height: 1.05;
+            letter-spacing: 2px;
+        }
+
+        .title-divider {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
+            margin: 8px auto 0;
+            position: relative;
+        }
+
+        .title-divider::after {
+            content: '❖';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--gold-light);
+            background: #111827;
+            padding: 0 10px;
+            font-size: 0.95rem;
+        }
+
+        /* אזור השמות המרכזי */
+        .couple-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin: 12px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .person-box {
+            flex: 1;
+            padding: 8px 20px;
+            opacity: 0;
+            transition: transform 0.4s ease;
+        }
+
+        .person-box:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .groom-box {
+            animation: slideInRight 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.6s;
+        }
+
+        .bride-box {
+            animation: slideInLeft 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.6s;
+        }
+
+        .person-role {
+            font-family: 'Heebo', sans-serif;
+            font-size: 1.05rem;
+            color: #cbd5e1;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .person-name {
+            font-size: 3.3rem;
+            font-weight: 700;
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 55%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 6px;
+            line-height: 1.1;
+        }
+
+        .family-details {
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.95rem;
+            color: var(--gold-light);
+            opacity: 0.85;
+        }
+
+        /* סמל מרכזי - טבעות ריאליסטיות ומסתובבות */
+        .center-emblem {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 25px;
+            opacity: 0;
+            animation: zoomIn 1s ease forwards 0.9s;
+            perspective: 800px;
+        }
+
+        .rings-wrapper {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.22) 0%, rgba(212, 175, 55, 0.05) 55%, transparent 72%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .rings-3d-spinner {
+            width: 100px;
+            height: 100px;
+            transform-style: preserve-3d;
+            animation: gentleSpin3D 7s ease-in-out infinite;
+            filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 12px rgba(212, 175, 55, 0.45));
+        }
+
+        .diamond-sparkle {
+            transform-origin: 70px 18px;
+            animation: sparkleTwinkle 2.2s infinite ease-in-out;
+        }
+
+        /* אזור תחתון וכפתורי הפעלה */
+        .footer-section {
+            opacity: 0;
+            animation: fadeInUp 0.9s ease forwards 1.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-top: 2px;
+            z-index: 20;
+        }
+
+        .blessing-text {
+            font-size: 1.3rem;
+            color: #f8fafc;
+            letter-spacing: 0.8px;
+        }
+
+        .buttons-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #e5c158 0%, #aa771c 100%);
+            color: #090d16;
+            border: 1px solid #fcf6ba;
+            padding: 9px 24px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.98rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 18px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 28px rgba(212, 175, 55, 0.8);
+            background: linear-gradient(135deg, #fcf6ba 0%, #d4af37 100%);
+        }
+
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-wine {
+            background: linear-gradient(135deg, #881337 0%, #4c0519 100%);
+            color: #fcf6ba;
+            border: 1px solid #d4af37;
+            box-shadow: 0 5px 18px rgba(136, 19, 55, 0.6);
+        }
+
+        .btn-wine:hover {
+            background: linear-gradient(135deg, #be123c 0%, #881337 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 28px rgba(225, 29, 72, 0.75);
+        }
+
+        /* --- מערכת כוסות הקריסטל הריאליסטיות להשקת לחיים --- */
+        .wine-toast-stage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 95;
+            overflow: hidden;
+        }
+
+        .wine-glass-container {
+            position: absolute;
+            top: 50%;
+            width: 240px;
+            height: 420px;
+            margin-top: -200px;
+            filter: drop-shadow(0 28px 32px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.08));
+            opacity: 0;
+            will-change: transform, left, right, opacity;
+        }
+
+        .glass-left {
+            left: -280px;
+            transform-origin: 50% 88%;
+        }
+
+        .glass-right {
+            right: -280px;
+            transform-origin: 50% 88%;
+        }
+
+        /* הפעלת אנימציית ההשקה היוקרתית */
+        .wine-toast-stage.active .glass-left {
+            animation: luxuryToastLeft 3.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .wine-toast-stage.active .glass-right {
+            animation: luxuryToastRight 3.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .wine-toast-stage.active .wine-liquid-left {
+            animation: realisticSloshLeft 3.4s ease-in-out forwards;
+            transform-origin: 110px 115px;
+        }
+
+        .wine-toast-stage.active .wine-liquid-right {
+            animation: realisticSloshRight 3.4s ease-in-out forwards;
+            transform-origin: 110px 115px;
+        }
+
+        /* גל היין המתרומם בתוך הכוס מעוצמת הפגיעה */
+        .wine-impact-crest {
+            opacity: 0;
+            transform-origin: center bottom;
+        }
+
+        .wine-toast-stage.active .wine-impact-crest {
+            animation: wineCrestRise 3.4s ease-out forwards;
+        }
+
+        @keyframes wineCrestRise {
+            0%, 31% { opacity: 0; transform: scaleY(0.2) translateY(10px); }
+            34% { opacity: 0.95; transform: scaleY(1.35) translateY(-18px); }
+            42% { opacity: 0.6; transform: scaleY(0.7) translateY(-5px); }
+            50%, 100% { opacity: 0; transform: scaleY(0.1) translateY(10px); }
+        }
+
+        @keyframes luxuryToastLeft {
+            0% {
+                left: -260px;
+                opacity: 0;
+                transform: translateY(40px) rotate(-18deg) scale(0.9);
+            }
+            24% {
+                left: calc(50% - 245px);
+                opacity: 1;
+                transform: translateY(5px) rotate(-6deg) scale(1);
+            }
+            /* רגע הנגיעה האלגנטית של שפות הקריסטל */
+            33% {
+                left: calc(50% - 208px);
+                opacity: 1;
+                transform: translateY(-6px) rotate(13.5deg) scale(1.02);
+            }
+            /* נסיגה עדינה ויוקרתית לאחר הצלצול */
+            43% {
+                left: calc(50% - 224px);
+                opacity: 1;
+                transform: translateY(0px) rotate(6deg) scale(1);
+            }
+            58% {
+                left: calc(50% - 218px);
+                opacity: 1;
+                transform: translateY(-3px) rotate(8.5deg) scale(1);
+            }
+            76% {
+                left: calc(50% - 222px);
+                opacity: 1;
+                transform: translateY(0px) rotate(5deg) scale(1);
+            }
+            100% {
+                left: -260px;
+                opacity: 0;
+                transform: translateY(35px) rotate(-15deg) scale(0.92);
+            }
+        }
+
+        @keyframes luxuryToastRight {
+            0% {
+                right: -260px;
+                opacity: 0;
+                transform: translateY(40px) rotate(18deg) scale(0.9);
+            }
+            24% {
+                right: calc(50% - 245px);
+                opacity: 1;
+                transform: translateY(5px) rotate(6deg) scale(1);
+            }
+            /* רגע הנגיעה האלגנטית של שפות הקריסטל */
+            33% {
+                right: calc(50% - 208px);
+                opacity: 1;
+                transform: translateY(-6px) rotate(-13.5deg) scale(1.02);
+            }
+            /* נסיגה עדינה ויוקרתית לאחר הצלצול */
+            43% {
+                right: calc(50% - 224px);
+                opacity: 1;
+                transform: translateY(0px) rotate(-6deg) scale(1);
+            }
+            58% {
+                right: calc(50% - 218px);
+                opacity: 1;
+                transform: translateY(-3px) rotate(-8.5deg) scale(1);
+            }
+            76% {
+                right: calc(50% - 222px);
+                opacity: 1;
+                transform: translateY(0px) rotate(-5deg) scale(1);
+            }
+            100% {
+                right: -260px;
+                opacity: 0;
+                transform: translateY(35px) rotate(15deg) scale(0.92);
+            }
+        }
+
+        /* פיזיקת נוזל היין בתוך הכוס בזמן ההטיה והפגיעה (התנחשלות לכיוון דופן הפגיעה) */
+        @keyframes realisticSloshLeft {
+            0% { transform: rotate(10deg); }
+            24% { transform: rotate(6deg); }
+            /* ברגע הפגיעה היין מטפס בחדות לעבר הדופן הפנימית של הכוס */
+            33% { transform: rotate(-22deg) translateY(-10px) scaleY(1.08); }
+            38% { transform: rotate(14deg) translateY(-4px); }
+            46% { transform: rotate(-11deg) translateY(-2px); }
+            56% { transform: rotate(6deg); }
+            68% { transform: rotate(-4deg); }
+            100% { transform: rotate(8deg); }
+        }
+
+        @keyframes realisticSloshRight {
+            0% { transform: rotate(-10deg); }
+            24% { transform: rotate(-6deg); }
+            /* ברגע הפגיעה היין מטפס בחדות לעבר הדופן הפנימית של הכוס */
+            33% { transform: rotate(22deg) translateY(-10px) scaleY(1.08); }
+            38% { transform: rotate(-14deg) translateY(-4px); }
+            46% { transform: rotate(11deg) translateY(-2px); }
+            56% { transform: rotate(-6deg); }
+            68% { transform: rotate(4deg); }
+            100% { transform: rotate(-8deg); }
+        }
+
+        /* אנימציות כלליות */
+        @keyframes gentleSpin3D {
+            0% { transform: rotateY(-25deg) rotateX(8deg) rotateZ(-3deg); }
+            50% { transform: rotateY(25deg) rotateX(-8deg) rotateZ(3deg) scale(1.05); }
+            100% { transform: rotateY(-25deg) rotateX(8deg) rotateZ(-3deg); }
+        }
+
+        @keyframes sparkleTwinkle {
+            0%, 100% { transform: scale(0.8) rotate(0deg); opacity: 0.7; }
+            50% { transform: scale(1.25) rotate(45deg); opacity: 1; }
+        }
+
+        @keyframes cardEntrance {
+            0% { opacity: 0; transform: scale(0.88) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        @keyframes shineText {
+            to { background-position: 200% center; }
+        }
+
+        @keyframes cardShimmer {
+            0% { left: -150%; }
+            30%, 100% { left: 150%; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(45px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-45px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 850px) {
+            .engagement-card { padding: 20px 16px; }
+            .couple-container { flex-direction: column; gap: 6px; margin: 6px 0; }
+            .main-title { font-size: 2.5rem; }
+            .person-name { font-size: 2.2rem; }
+            .rings-wrapper { width: 90px; height: 90px; }
+            .rings-3d-spinner { width: 75px; height: 75px; }
+            .action-btn { padding: 8px 16px; font-size: 0.88rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- קנבס אחורי לחלקיקי זהב מרחפים -->
+    <canvas id="bg-particles-canvas"></canvas>
+
+    <!-- קנבס קדמי לקונפטי, זיקוקים, התזת יין, גלי הדף ושובל עכבר -->
+    <canvas id="fx-canvas"></canvas>
+
+    <!-- הגדרת גרדיאנטים פוטו-ריאליסטיים לזכוכית קריסטל, יין בורדו, זהב ויהלום -->
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
+            <!-- חיתוך מדויק של חלל פנים כוס הקריסטל -->
+            <clipPath id="realistic-bowl-clip">
+                <path d="M 55 28 C 36 108, 48 188, 110 198 C 172 188, 184 108, 165 28 Z" />
+            </clipPath>
+
+            <!-- יין אדום מיושן תלת-ממדי: כהה במרכז, רובי עשיר בשוליים -->
+            <radialGradient id="realistic-wine-body" cx="50%" cy="58%" r="58%" fx="38%" fy="45%">
+                <stop offset="0%" stop-color="#220108" />
+                <stop offset="45%" stop-color="#4c0414" />
+                <stop offset="78%" stop-color="#880e28" />
+                <stop offset="93%" stop-color="#be123c" />
+                <stop offset="100%" stop-color="#f43f5e" />
+            </radialGradient>
+
+            <!-- פני היין העליונים (Meniscus) עם השתקפות אור ריאליסטית -->
+            <linearGradient id="realistic-wine-surface" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#9f1239" />
+                <stop offset="25%" stop-color="#e11d48" />
+                <stop offset="50%" stop-color="#590619" />
+                <stop offset="80%" stop-color="#be123c" />
+                <stop offset="100%" stop-color="#881337" />
+            </linearGradient>
+
+            <!-- השתקפות אור אדומה בתחתית היין (Caustic Glow) -->
+            <radialGradient id="wine-caustic-glow" cx="50%" cy="85%" r="40%">
+                <stop offset="0%" stop-color="#ff2a55" stop-opacity="0.65" />
+                <stop offset="60%" stop-color="#be123c" stop-opacity="0.2" />
+                <stop offset="100%" stop-color="#4c0414" stop-opacity="0" />
+            </radialGradient>
+
+            <!-- גוף זכוכית הקריסטל - שבירת אור בדפנות ושקיפות נקייה במרכז -->
+            <linearGradient id="crystal-bowl-body" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="rgba(255, 255, 255, 0.42)" />
+                <stop offset="7%" stop-color="rgba(255, 255, 255, 0.14)" />
+                <stop offset="22%" stop-color="rgba(255, 255, 255, 0.03)" />
+                <stop offset="50%" stop-color="rgba(255, 255, 255, 0.0)" />
+                <stop offset="78%" stop-color="rgba(255, 255, 255, 0.04)" />
+                <stop offset="93%" stop-color="rgba(255, 255, 255, 0.18)" />
+                <stop offset="100%" stop-color="rgba(255, 255, 255, 0.48)" />
+            </linearGradient>
+
+            <!-- השתקפות חלון תאורה (Studio Softbox Highlight) על דופן הכוס -->
+            <linearGradient id="studio-glass-highlight" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="rgba(255, 255, 255, 0.85)" />
+                <stop offset="35%" stop-color="rgba(255, 255, 255, 0.45)" />
+                <stop offset="75%" stop-color="rgba(255, 255, 255, 0.1)" />
+                <stop offset="100%" stop-color="rgba(255, 255, 255, 0.0)" />
+            </linearGradient>
+
+            <!-- רגל הקריסטל (Stem) עם שבירות אור פנימיות -->
+            <linearGradient id="crystal-stem-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="rgba(255, 255, 255, 0.75)" />
+                <stop offset="25%" stop-color="rgba(255, 255, 255, 0.15)" />
+                <stop offset="55%" stop-color="rgba(200, 220, 255, 0.08)" />
+                <stop offset="80%" stop-color="rgba(212, 175, 55, 0.35)" />
+                <stop offset="100%" stop-color="rgba(255, 255, 255, 0.8)" />
+            </linearGradient>
+
+            <!-- בסיס הכוס (Foot) -->
+            <radialGradient id="crystal-foot-grad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="rgba(255, 255, 255, 0.45)" />
+                <stop offset="55%" stop-color="rgba(255, 255, 255, 0.1)" />
+                <stop offset="88%" stop-color="rgba(255, 255, 255, 0.35)" />
+                <stop offset="100%" stop-color="rgba(255, 255, 255, 0.75)" />
+            </radialGradient>
+
+            <!-- גרדיאנט זהב חיצוני עשיר -->
+            <linearGradient id="luxury-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#8a5a10" />
+                <stop offset="22%" stop-color="#d4af37" />
+                <stop offset="45%" stop-color="#fff6c5" />
+                <stop offset="65%" stop-color="#d4af37" />
+                <stop offset="85%" stop-color="#9b6c1b" />
+                <stop offset="100%" stop-color="#fcf6ba" />
+            </linearGradient>
+
+            <linearGradient id="inner-ring-gold" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#fff2b2" />
+                <stop offset="35%" stop-color="#b8860b" />
+                <stop offset="70%" stop-color="#5c3d04" />
+                <stop offset="100%" stop-color="#d4af37" />
+            </linearGradient>
+
+            <linearGradient id="diamond-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="40%" stop-color="#e0f2fe" />
+                <stop offset="70%" stop-color="#bae6fd" />
+                <stop offset="100%" stop-color="#ffffff" />
+            </linearGradient>
+
+            <!-- תבנית כוס קריסטל ריאליסטית לשימוש חוזר בשני הצדדים -->
+            <g id="crystal-glass-overlay">
+                <path d="M 65 175 C 82 197, 138 197, 155 175 C 142 203, 78 203, 65 175 Z" fill="rgba(255,255,255,0.32)" />
+                <path d="M 78 188 C 95 202, 125 202, 142 188 C 130 207, 90 207, 78 188 Z" fill="rgba(253, 164, 175, 0.25)" />
+
+                <path d="M 55 28 C 36 108, 48 188, 110 198 C 172 188, 184 108, 165 28 Z" fill="url(#crystal-bowl-body)" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" />
+                <path d="M 57.5 30 C 39.5 108, 51 185, 110 194.5 C 169 185, 180.5 108, 162.5 30" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1" />
+
+                <path d="M 62 38 C 48 100, 56 160, 88 184 C 72 162, 65 102, 76 38 Z" fill="url(#studio-glass-highlight)" opacity="0.85" />
+                
+                <path d="M 157 40 C 169 102, 160 158, 132 184" fill="none" stroke="url(#studio-glass-highlight)" stroke-width="3.2" stroke-linecap="round" opacity="0.7" />
+                <path d="M 152 46 C 162 98, 155 148, 134 174" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-linecap="round" />
+
+                <path d="M 96 196 Q 110 205 124 196 L 116 212 Q 110 215 104 212 Z" fill="url(#crystal-stem-grad)" />
+                <ellipse cx="110" cy="203" rx="9" ry="3" fill="rgba(136, 19, 55, 0.45)" />
+
+                <path d="M 104 210 C 106 250, 106 290, 102 332 L 118 332 C 114 290, 114 250, 116 210 Z" fill="url(#crystal-stem-grad)" stroke="rgba(255,255,255,0.35)" stroke-width="0.7" />
+                <line x1="107.5" y1="214" x2="106.5" y2="328" stroke="rgba(255,255,255,0.75)" stroke-width="1.4" stroke-linecap="round" />
+
+                <path d="M 102 330 C 92 337, 72 340, 58 342 L 162 342 C 148 340, 128 337, 118 330 Z" fill="url(#crystal-stem-grad)" />
+
+                <ellipse cx="110" cy="343" rx="54" ry="9.5" fill="url(#crystal-foot-grad)" stroke="rgba(255,255,255,0.65)" stroke-width="1.2" />
+                <ellipse cx="110" cy="342" rx="46" ry="6.5" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.8" />
+                <ellipse cx="110" cy="340" rx="16" ry="3.5" fill="rgba(255,255,255,0.4)" />
+
+                <ellipse cx="110" cy="28" rx="55" ry="6.5" fill="rgba(255,255,255,0.06)" stroke="url(#luxury-gold)" stroke-width="2.2" />
+                <ellipse cx="110" cy="28" rx="55" ry="6.5" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="0.7" />
+                <path d="M 68 24.5 A 55 6.5 0 0 1 115 21.5" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.9" />
+            </g>
+        </defs>
+    </svg>
+
+    <!-- במת כוסות הקריסטל להשקת לחיים -->
+    <div class="wine-toast-stage" id="wine-stage">
+        <!-- כוס שמאל -->
+        <div class="wine-glass-container glass-left">
+            <svg viewBox="0 0 220 365" width="100%" height="100%">
+                <g clip-path="url(#realistic-bowl-clip)">
+                    <g class="wine-liquid-left">
+                        <!-- גוף היין המרכזי -->
+                        <path d="M 10 106 Q 70 112, 110 106 T 210 106 L 210 220 L 10 220 Z" fill="url(#realistic-wine-body)" />
+                        <ellipse cx="110" cy="175" rx="48" ry="24" fill="url(#wine-caustic-glow)" />
+                        <!-- גל ההתרוממות של היין בתוך הכוס ברגע הפגיעה -->
+                        <path class="wine-impact-crest" d="M 105 108 Q 145 72, 175 96 L 175 118 L 105 118 Z" fill="url(#realistic-wine-surface)" />
+                        <!-- פני היין העליונים -->
+                        <ellipse cx="110" cy="106" rx="65" ry="9.5" fill="url(#realistic-wine-surface)" />
+                        <ellipse cx="110" cy="106" rx="64.5" ry="9" fill="none" stroke="#fda4af" stroke-width="1.3" opacity="0.65" />
+                        <path d="M 52 104 A 63 9 0 0 0 168 104" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.55" />
+                        
+                        <!-- עוגן מדויק על שיא גל היין שממנו תצא ההתזה (צמוד לדופן הפנימית של הכוס) -->
+                        <circle id="left-wine-surface-anchor" cx="152" cy="96" r="1" opacity="0" />
+                    </g>
+                </g>
+                <use href="#crystal-glass-overlay" />
+                <!-- עוגן על שפת הקריסטל הימנית של הכוס השמאלית -->
+                <circle id="left-rim-anchor" cx="165" cy="28" r="1" opacity="0" />
+            </svg>
+        </div>
+
+        <!-- כוס ימין -->
+        <div class="wine-glass-container glass-right">
+            <svg viewBox="0 0 220 365" width="100%" height="100%">
+                <g clip-path="url(#realistic-bowl-clip)">
+                    <g class="wine-liquid-right">
+                        <path d="M 10 106 Q 70 100, 110 106 T 210 106 L 210 220 L 10 220 Z" fill="url(#realistic-wine-body)" />
+                        <ellipse cx="110" cy="175" rx="48" ry="24" fill="url(#wine-caustic-glow)" />
+                        <!-- גל ההתרוממות של היין בתוך הכוס הימנית ברגע הפגיעה -->
+                        <path class="wine-impact-crest" d="M 45 96 Q 75 72, 115 108 L 115 118 L 45 118 Z" fill="url(#realistic-wine-surface)" />
+                        <!-- פני היין העליונים -->
+                        <ellipse cx="110" cy="106" rx="65" ry="9.5" fill="url(#realistic-wine-surface)" />
+                        <ellipse cx="110" cy="106" rx="64.5" ry="9" fill="none" stroke="#fda4af" stroke-width="1.3" opacity="0.65" />
+                        <path d="M 52 104 A 63 9 0 0 0 168 104" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.55" />
+
+                        <!-- עוגן מדויק על שיא גל היין שממנו תצא ההתזה בכוס הימנית -->
+                        <circle id="right-wine-surface-anchor" cx="68" cy="96" r="1" opacity="0" />
+                    </g>
+                </g>
+                <use href="#crystal-glass-overlay" transform="translate(220, 0) scale(-1, 1)" />
+                <!-- עוגן על שפת הקריסטל השמאלית של הכוס הימנית -->
+                <circle id="right-rim-anchor" cx="55" cy="28" r="1" opacity="0" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- חלונית המודעה המרכזית -->
+    <div class="engagement-card" id="card">
+        <div class="card-shimmer"></div>
+        <div class="card-inner-border"></div>
+
+        <!-- עיטורי פינות -->
+        <div class="corner corner-tl">
+            <svg viewBox="0 0 100 100"><path d="M0,0 L100,0 L100,12 L12,12 L12,100 L0,100 Z M24,24 L70,24 L70,30 L30,30 L30,70 L24,70 Z"/></svg>
+        </div>
+        <div class="corner corner-tr">
+            <svg viewBox="0 0 100 100"><path d="M0,0 L100,0 L100,12 L12,12 L12,100 L0,100 Z M24,24 L70,24 L70,30 L30,30 L30,70 L24,70 Z"/></svg>
+        </div>
+        <div class="corner corner-bl">
+            <svg viewBox="0 0 100 100"><path d="M0,0 L100,0 L100,12 L12,12 L12,100 L0,100 Z M24,24 L70,24 L70,30 L30,30 L30,70 L24,70 Z"/></svg>
+        </div>
+        <div class="corner corner-br">
+            <svg viewBox="0 0 100 100"><path d="M0,0 L100,0 L100,12 L12,12 L12,100 L0,100 Z M24,24 L70,24 L70,30 L30,30 L30,70 L24,70 Z"/></svg>
+        </div>
+
+        <!-- כותרת עליונה -->
+        <div class="header-section">
+            <div class="sub-header">בשעה טובה ומוצלחת</div>
+            <h1 class="main-title">מ א ו ר ס י ם</h1>
+            <div class="title-divider"></div>
+        </div>
+
+        <!-- שמות החתן והכלה + טבעות יוקרתיות -->
+        <div class="couple-container">
+            <div class="person-box groom-box">
+                <div class="person-role">החתן המפואר</div>
+                <h2 class="person-name">יהונתן כהן</h2>
+                <div class="family-details">משפחת כהן הנכבדה</div>
+            </div>
+
+            <!-- טבעות ריאליסטיות משולבות ומסתובבות -->
+            <div class="center-emblem">
+                <div class="rings-wrapper">
+                    <svg class="rings-3d-spinner" viewBox="0 0 120 110">
+                        <ellipse cx="44" cy="64" rx="26" ry="26" fill="none" stroke="url(#inner-ring-gold)" stroke-width="9" />
+                        <ellipse cx="44" cy="64" rx="26" ry="26" fill="none" stroke="url(#luxury-gold)" stroke-width="5.5" />
+                        <path d="M 24 48 A 26 26 0 0 1 58 42" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.7" />
+
+                        <ellipse cx="72" cy="58" rx="26" ry="26" fill="none" stroke="url(#inner-ring-gold)" stroke-width="9" />
+                        <ellipse cx="72" cy="58" rx="26" ry="26" fill="none" stroke="url(#luxury-gold)" stroke-width="5.5" />
+                        <path d="M 54 40 A 26 26 0 0 1 88 38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.7" />
+
+                        <path d="M 59 42 A 26 26 0 0 1 68 74" fill="none" stroke="url(#inner-ring-gold)" stroke-width="9.2" stroke-linecap="round" />
+                        <path d="M 59 42 A 26 26 0 0 1 68 74" fill="none" stroke="url(#luxury-gold)" stroke-width="5.7" stroke-linecap="round" />
+
+                        <path d="M 65 32 L 61 24 L 79 24 L 75 32 Z" fill="url(#luxury-gold)" />
+
+                        <polygon points="61,24 65,17 75,17 79,24 70,33" fill="url(#diamond-grad)" stroke="#ffffff" stroke-width="0.8" />
+                        <polyline points="61,24 79,24" stroke="#bae6fd" stroke-width="0.7" fill="none"/>
+                        <polyline points="65,17 67,24 70,33 73,24 75,17" stroke="#7dd3fc" stroke-width="0.7" fill="none"/>
+
+                        <g class="diamond-sparkle">
+                            <path d="M70 6 L71.5 15.5 L81 17 L71.5 18.5 L70 28 L68.5 18.5 L59 17 L68.5 15.5 Z" fill="#ffffff" />
+                            <circle cx="70" cy="17" r="2.5" fill="#fffbeb" />
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="person-box bride-box">
+                <div class="person-role">הכלה המהוללה</div>
+                <h2 class="person-name">תמר דינבצקי</h2>
+                <div class="family-details">משפחת דינבצקי הנכבדה</div>
+            </div>
+        </div>
+
+        <!-- חלק תחתון וכפתורי חגיגה אינטראקטיביים -->
+        <div class="footer-section">
+            <p class="blessing-text">שפע ברכות ואיחולים לבביים להקמת בית נאמן, מלא שמחה, אושר ואור!</p>
+            <div class="buttons-row">
+                <button class="action-btn" onclick="launchCelebration()">🎉 מטר קונפטי מוזהב</button>
+                <button class="action-btn btn-wine" onclick="launchWineToast()">🍷 השקת לחיים</button>
+                <button class="action-btn" onclick="launchFireworksShow()">🎆 מופע זיקוקים</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const card = document.getElementById('card');
+        const bgCanvas = document.getElementById('bg-particles-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        const fxCanvas = document.getElementById('fx-canvas');
+        const fxCtx = fxCanvas.getContext('2d');
+
+        let width, height;
+        function resizeCanvases() {
+            width = bgCanvas.width = fxCanvas.width = window.innerWidth;
+            height = bgCanvas.height = fxCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvases);
+        resizeCanvases();
+
+        const goldColors = ['#d4af37', '#fcf6ba', '#aa771c', '#fbf5b7', '#ffffff', '#eab308'];
+        const fireworkPalettes = [
+            ['#fcf6ba', '#d4af37', '#ffffff', '#f59e0b'],
+            ['#fda4af', '#e11d48', '#fecdd3', '#fbbf24'],
+            ['#bae6fd', '#38bdf8', '#ffffff', '#fde047'],
+            ['#bbf7d0', '#4ade80', '#fef08a', '#ffffff']
+        ];
+
+        const ambientParticles = [];
+        const confettiParticles = [];
+        const mouseSparkles = [];
+        const wineSplashDrops = [];
+        const wineStreams = [];
+        const clinkRings = [];
+        const fireworkRockets = [];
+        const fireworkSparks = [];
+
+        // --- 1. תזוזת עכבר: אפקט תלת-ממד לחלונית + שובל ניצוצות זוהרים ---
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.clientX) / 55;
+            const yAxis = (window.innerHeight / 2 - e.clientY) / 55;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+
+            for (let i = 0; i < 3; i++) {
+                mouseSparkles.push({
+                    x: e.clientX + (Math.random() - 0.5) * 10,
+                    y: e.clientY + (Math.random() - 0.5) * 10,
+                    vx: (Math.random() - 0.5) * 1.8,
+                    vy: (Math.random() - 0.5) * 1.8 + 0.4,
+                    size: Math.random() * 5 + 2.5,
+                    color: goldColors[Math.floor(Math.random() * goldColors.length)],
+                    alpha: 1,
+                    rotation: Math.random() * Math.PI,
+                    rotationSpeed: (Math.random() - 0.5) * 0.15
+                });
+            }
+        });
+
+        document.addEventListener('mouseleave', () => {
+            card.style.transition = 'transform 0.5s ease';
+            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+            setTimeout(() => { card.style.transition = ''; }, 500);
+        });
+
+        // --- 2. יצירת אבק כוכבים מוזהב קבוע ברקע ---
+        for (let i = 0; i < 70; i++) {
+            ambientParticles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 2.2 + 0.5,
+                color: goldColors[Math.floor(Math.random() * goldColors.length)],
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: -Math.random() * 0.6 - 0.2,
+                alpha: Math.random(),
+                fadeSpeed: Math.random() * 0.015 + 0.005
+            });
+        }
+
+        // --- 3. פונקציית קונפטי מוזהב ---
+        function launchCelebration() {
+            const cardRect = card.getBoundingClientRect();
+            for (let i = 0; i < 140; i++) {
+                const spawnX = cardRect.left + Math.random() * cardRect.width;
+                const spawnY = cardRect.top + cardRect.height * (0.3 + Math.random() * 0.5);
+
+                confettiParticles.push({
+                    x: spawnX,
+                    y: spawnY,
+                    w: Math.random() * 11 + 5,
+                    h: Math.random() * 7 + 3,
+                    color: goldColors[Math.floor(Math.random() * goldColors.length)],
+                    vx: (Math.random() - 0.5) * 14,
+                    vy: -(Math.random() * 13 + 5),
+                    gravity: 0.24,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 12,
+                    tilt: Math.random() * 10,
+                    tiltSpeed: Math.random() * 0.1 + 0.05,
+                    alpha: 1
+                });
+            }
+        }
+
+        // --- 4. פונקציית השקת כוסות קריסטל והתזה ישירות מתוך היין שבכוס ---
+        let toastTimeout = null;
+        let splashTimeout = null;
+
+        function launchWineToast() {
+            const stage = document.getElementById('wine-stage');
+            stage.classList.remove('active');
+            void stage.offsetWidth;
+            stage.classList.add('active');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            if (splashTimeout) clearTimeout(splashTimeout);
+
+            // תזמון מדויק לרגע הפגיעה (33% מתוך 3.4 שניות = כ-1115 מילישניות)
+            splashTimeout = setTimeout(() => {
+                triggerRealisticWineEruption();
+            }, 1115);
+
+            toastTimeout = setTimeout(() => {
+                stage.classList.remove('active');
+            }, 3450);
+        }
+
+        function triggerRealisticWineEruption() {
+            // איתור המיקום האמיתי של פני היין ושפת הקריסטל על המסך ברגע הפגיעה
+            const leftWineEl = document.getElementById('left-wine-surface-anchor');
+            const rightWineEl = document.getElementById('right-wine-surface-anchor');
+            const leftRimEl = document.getElementById('left-rim-anchor');
+            const rightRimEl = document.getElementById('right-rim-anchor');
+
+            const leftWineRect = leftWineEl.getBoundingClientRect();
+            const rightWineRect = rightWineEl.getBoundingClientRect();
+            const leftRimRect = leftRimEl.getBoundingClientRect();
+            const rightRimRect = rightRimEl.getBoundingClientRect();
+
+            // נקודת המפגש המדויקת של שפות הכוסות
+            const clinkX = (leftRimRect.left + rightRimRect.left) / 2;
+            const clinkY = (leftRimRect.top + rightRimRect.top) / 2;
+
+            // א. טבעות הדף אקוסטיות עדינות בנקודת המגע של שפות הקריסטל
+            for (let i = 0; i < 3; i++) {
+                clinkRings.push({
+                    x: clinkX,
+                    y: clinkY,
+                    radius: 3 + i * 5,
+                    maxRadius: 95 + i * 30,
+                    alpha: 0.9 - i * 0.22,
+                    lineWidth: 2.4 - i * 0.5
+                });
+            }
+
+            // ב. ניצוצות קריסטל בנקודת המגע של השפתיים
+            for (let i = 0; i < 18; i++) {
+                const angle = (Math.PI * 2 * i) / 18 + (Math.random() - 0.5) * 0.2;
+                const speed = Math.random() * 4.5 + 1.2;
+                mouseSparkles.push({
+                    x: clinkX,
+                    y: clinkY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: Math.random() * 4.5 + 2,
+                    color: i % 2 === 0 ? '#ffffff' : '#fcf6ba',
+                    alpha: 1,
+                    rotation: Math.random() * Math.PI,
+                    rotationSpeed: 0.18
+                });
+            }
+
+            // ג. התזת היין ישירות מתוך פני היין שבכל כוס (עולה מתוך היין, חוצה את השפה ונשפך)
+            spawnGlassWineSplash(leftWineRect.left, leftWineRect.top, true);
+            spawnGlassWineSplash(rightWineRect.left, rightWineRect.top, false);
+        }
+
+        function spawnGlassWineSplash(wineOriginX, wineOriginY, isLeftGlass) {
+            const wineShades = ['#3b020e', '#590619', '#880e28', '#9f1239', '#be123c', '#e11d48'];
+
+            // 1. סילוני יין (Liquid Ribbons) שמתרוממים ממש מתוך היין שבכוס מעוצמת הפגיעה
+            for (let s = 0; s < 7; s++) {
+                // זווית שמכוונת מתוך פני היין אל מעבר לשפת הכוס הקרובה
+                const baseAngle = isLeftGlass ? -Math.PI * 0.36 : -Math.PI * 0.64;
+                const angle = baseAngle + (Math.random() - 0.5) * 0.45;
+                const speed = Math.random() * 5.2 + 5.8;
+
+                wineStreams.push({
+                    x: wineOriginX + (Math.random() - 0.5) * 14,
+                    y: wineOriginY + (Math.random() - 0.5) * 6,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    gravity: 0.28,
+                    width: Math.random() * 3.5 + 2.5,
+                    color: wineShades[Math.floor(Math.random() * 4) + 1],
+                    history: [],
+                    alpha: 0.95
+                });
+            }
+
+            // 2. טיפות יין שניתזות מתוך גל היין המתרומם ונשפכות בקשת ריאליסטית
+            for (let i = 0; i < 34; i++) {
+                // חלק מהטיפות עפות קדימה מעל השפה וחלק ניתזות בעדינות לאחור בתוך הכוס
+                const forwardSplash = Math.random() > 0.25;
+                let baseAngle;
+                if (forwardSplash) {
+                    baseAngle = isLeftGlass ? -Math.PI * 0.34 : -Math.PI * 0.66;
+                } else {
+                    baseAngle = isLeftGlass ? -Math.PI * 0.65 : -Math.PI * 0.35;
+                }
+
+                const angle = baseAngle + (Math.random() - 0.5) * 0.55;
+                const speed = Math.random() * 6.5 + 3.8;
+
+                wineSplashDrops.push({
+                    x: wineOriginX + (Math.random() - 0.5) * 22,
+                    y: wineOriginY + (Math.random() - 0.5) * 8,
+                    prevX: wineOriginX,
+                    prevY: wineOriginY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: Math.random() * 3.4 + 1.3,
+                    color: wineShades[Math.floor(Math.random() * wineShades.length)],
+                    gravity: 0.29,
+                    alpha: 0.98
+                });
+            }
+        }
+
+        // --- 5. פונקציית מופע זיקוקים ---
+        function launchFireworksShow() {
+            for (let i = 0; i < 7; i++) {
+                setTimeout(() => {
+                    const startX = width * (0.18 + Math.random() * 0.64);
+                    const targetY = height * (0.15 + Math.random() * 0.42);
+                    const palette = fireworkPalettes[Math.floor(Math.random() * fireworkPalettes.length)];
+
+                    fireworkRockets.push({
+                        x: startX,
+                        y: height,
+                        vx: (Math.random() - 0.5) * 2.5,
+                        vy: -(Math.random() * 5 + 12.5),
+                        targetY: targetY,
+                        palette: palette,
+                        trail: []
+                    });
+                }, i * 320);
+            }
+        }
+
+        function explodeFirework(x, y, palette) {
+            const count = 95;
+            for (let i = 0; i < count; i++) {
+                const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.15;
+                const speed = Math.random() * 7.5 + 2;
+                fireworkSparks.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    color: palette[Math.floor(Math.random() * palette.length)],
+                    radius: Math.random() * 2.8 + 1.2,
+                    alpha: 1,
+                    decay: Math.random() * 0.014 + 0.01,
+                    gravity: 0.09,
+                    trail: []
+                });
+            }
+        }
+
+        function drawStarSparkle(ctx, x, y, size, rotation, color, alpha) {
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, alpha);
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+            ctx.fillStyle = color;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = color;
+
+            ctx.beginPath();
+            for (let i = 0; i < 4; i++) {
+                ctx.lineTo(Math.cos((i * Math.PI) / 2) * size, Math.sin((i * Math.PI) / 2) * size);
+                ctx.lineTo(
+                    Math.cos(((i + 0.5) * Math.PI) / 2) * (size * 0.35),
+                    Math.sin(((i + 0.5) * Math.PI) / 2) * (size * 0.35)
+                );
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        setTimeout(launchCelebration, 1100);
+
+        // --- לולאת האנימציה הראשית ---
+        function animate() {
+            bgCtx.clearRect(0, 0, width, height);
+            fxCtx.clearRect(0, 0, width, height);
+
+            // 1. חלקיקי רקע מרחפים
+            ambientParticles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha += p.fadeSpeed;
+
+                if (p.alpha >= 1 || p.alpha <= 0.1) p.fadeSpeed *= -1;
+                if (p.y < 0) p.y = height;
+                if (p.x < 0) p.x = width;
+                if (p.x > width) p.x = 0;
+
+                bgCtx.save();
+                bgCtx.globalAlpha = Math.max(0, Math.min(1, p.alpha));
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                bgCtx.fillStyle = p.color;
+                bgCtx.shadowBlur = 8;
+                bgCtx.shadowColor = p.color;
+                bgCtx.fill();
+                bgCtx.restore();
+            });
+
+            // 2. קונפטי חגיגי
+            for (let i = confettiParticles.length - 1; i >= 0; i--) {
+                const c = confettiParticles[i];
+                c.x += c.vx;
+                c.y += c.vy;
+                c.vy += c.gravity;
+                c.vx *= 0.99;
+                c.rotation += c.rotationSpeed;
+                c.tilt += c.tiltSpeed;
+                c.alpha -= 0.0045;
+
+                if (c.y > height || c.alpha <= 0) {
+                    confettiParticles.splice(i, 1);
+                    continue;
+                }
+
+                fxCtx.save();
+                fxCtx.globalAlpha = Math.max(0, c.alpha);
+                fxCtx.translate(c.x, c.y);
+                fxCtx.rotate((c.rotation * Math.PI) / 180);
+                fxCtx.scale(1, Math.cos(c.tilt));
+                fxCtx.fillStyle = c.color;
+                fxCtx.shadowBlur = 4;
+                fxCtx.shadowColor = 'rgba(0,0,0,0.4)';
+                fxCtx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+                fxCtx.restore();
+            }
+
+            // 3. טבעות הדף אקוסטיות של השקת הקריסטל
+            for (let i = clinkRings.length - 1; i >= 0; i--) {
+                const ring = clinkRings[i];
+                ring.radius += (ring.maxRadius - ring.radius) * 0.12;
+                ring.alpha -= 0.025;
+
+                if (ring.alpha <= 0) {
+                    clinkRings.splice(i, 1);
+                    continue;
+                }
+
+                fxCtx.save();
+                fxCtx.globalAlpha = Math.max(0, ring.alpha);
+                fxCtx.beginPath();
+                fxCtx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
+                fxCtx.strokeStyle = '#fcf6ba';
+                fxCtx.lineWidth = ring.lineWidth;
+                fxCtx.shadowBlur = 12;
+                fxCtx.shadowColor = '#d4af37';
+                fxCtx.stroke();
+                fxCtx.restore();
+            }
+
+            // 4. סילוני יין מחוברים שמתרוממים מתוך הכוס ונשפכים (Liquid Streams)
+            for (let i = wineStreams.length - 1; i >= 0; i--) {
+                const stream = wineStreams[i];
+                stream.history.push({ x: stream.x, y: stream.y });
+                if (stream.history.length > 7) stream.history.shift();
+
+                stream.x += stream.vx;
+                stream.y += stream.vy;
+                stream.vy += stream.gravity;
+                stream.vx *= 0.99;
+                stream.alpha -= 0.022;
+
+                if (stream.alpha <= 0 || stream.y > height) {
+                    wineStreams.splice(i, 1);
+                    continue;
+                }
+
+                if (stream.history.length > 2) {
+                    fxCtx.save();
+                    fxCtx.globalAlpha = Math.max(0, stream.alpha);
+                    fxCtx.beginPath();
+                    fxCtx.moveTo(stream.history[0].x, stream.history[0].y);
+                    for (let j = 1; j < stream.history.length; j++) {
+                        fxCtx.lineTo(stream.history[j].x, stream.history[j].y);
+                    }
+                    fxCtx.strokeStyle = stream.color;
+                    fxCtx.lineWidth = stream.width;
+                    fxCtx.lineCap = 'round';
+                    fxCtx.lineJoin = 'round';
+                    fxCtx.shadowBlur = 6;
+                    fxCtx.shadowColor = '#4c0519';
+                    fxCtx.stroke();
+
+                    // פס ברק דק לאורך סילון היין
+                    fxCtx.strokeStyle = 'rgba(255, 228, 230, 0.45)';
+                    fxCtx.lineWidth = stream.width * 0.3;
+                    fxCtx.stroke();
+                    fxCtx.restore();
+                }
+            }
+
+            // 5. טיפות יין ריאליסטיות שניתזות מתוך הכוס ונשפכות מטה
+            for (let i = wineSplashDrops.length - 1; i >= 0; i--) {
+                const d = wineSplashDrops[i];
+                d.prevX = d.x;
+                d.prevY = d.y;
+                d.x += d.vx;
+                d.y += d.vy;
+                d.vy += d.gravity;
+                d.vx *= 0.99;
+                d.alpha -= 0.013;
+
+                if (d.y > height || d.alpha <= 0) {
+                    wineSplashDrops.splice(i, 1);
+                    continue;
+                }
+
+                fxCtx.save();
+                fxCtx.globalAlpha = Math.max(0, d.alpha);
+                fxCtx.translate(d.x, d.y);
+                const angle = Math.atan2(d.vy, d.vx);
+                fxCtx.rotate(angle);
+
+                // התארכות קלה של הטיפה בהתאם למהירות הנפילה (Fluid Stretch)
+                const speed = Math.hypot(d.vx, d.vy);
+                const stretch = Math.min(2.1, 1 + speed * 0.08);
+
+                fxCtx.beginPath();
+                fxCtx.ellipse(0, 0, d.radius * stretch, d.radius * 0.85, 0, 0, Math.PI * 2);
+                fxCtx.fillStyle = d.color;
+                fxCtx.shadowBlur = 7;
+                fxCtx.shadowColor = '#3b020e';
+                fxCtx.fill();
+
+                // השתקפות רובי פנימית בטיפה
+                fxCtx.beginPath();
+                fxCtx.ellipse(d.radius * 0.15, d.radius * 0.12, d.radius * 0.65, d.radius * 0.32, 0, 0, Math.PI * 2);
+                fxCtx.fillStyle = 'rgba(244, 63, 94, 0.55)';
+                fxCtx.fill();
+
+                // נקודת ברק לבנה חדה על הטיפה
+                fxCtx.beginPath();
+                fxCtx.arc(-d.radius * 0.3, -d.radius * 0.22, d.radius * 0.25, 0, Math.PI * 2);
+                fxCtx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                fxCtx.fill();
+                fxCtx.restore();
+            }
+
+            // 6. טילי זיקוקים
+            for (let i = fireworkRockets.length - 1; i >= 0; i--) {
+                const r = fireworkRockets[i];
+                r.trail.push({ x: r.x, y: r.y });
+                if (r.trail.length > 8) r.trail.shift();
+
+                r.x += r.vx;
+                r.y += r.vy;
+                r.vy += 0.16;
+
+                fxCtx.save();
+                for (let t = 0; t < r.trail.length; t++) {
+                    const pos = r.trail[t];
+                    fxCtx.globalAlpha = (t / r.trail.length) * 0.8;
+                    fxCtx.beginPath();
+                    fxCtx.arc(pos.x, pos.y, 2.5, 0, Math.PI * 2);
+                    fxCtx.fillStyle = '#fcf6ba';
+                    fxCtx.fill();
+                }
+                fxCtx.restore();
+
+                if (r.vy >= -1.5 || r.y <= r.targetY) {
+                    explodeFirework(r.x, r.y, r.palette);
+                    fireworkRockets.splice(i, 1);
+                }
+            }
+
+            // 7. ניצוצות פיצוץ הזיקוקים
+            for (let i = fireworkSparks.length - 1; i >= 0; i--) {
+                const s = fireworkSparks[i];
+                s.trail.push({ x: s.x, y: s.y });
+                if (s.trail.length > 5) s.trail.shift();
+
+                s.x += s.vx;
+                s.y += s.vy;
+                s.vx *= 0.965;
+                s.vy *= 0.965;
+                s.vy += s.gravity;
+                s.alpha -= s.decay;
+
+                if (s.alpha <= 0) {
+                    fireworkSparks.splice(i, 1);
+                    continue;
+                }
+
+                fxCtx.save();
+                if (s.trail.length > 1) {
+                    fxCtx.beginPath();
+                    fxCtx.moveTo(s.trail[0].x, s.trail[0].y);
+                    for (let t = 1; t < s.trail.length; t++) {
+                        fxCtx.lineTo(s.trail[t].x, s.trail[t].y);
+                    }
+                    fxCtx.strokeStyle = s.color;
+                    fxCtx.globalAlpha = Math.max(0, s.alpha * 0.5);
+                    fxCtx.lineWidth = s.radius;
+                    fxCtx.stroke();
+                }
+
+                fxCtx.globalAlpha = Math.max(0, s.alpha);
+                fxCtx.beginPath();
+                fxCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                fxCtx.fillStyle = s.color;
+                fxCtx.shadowBlur = 10;
+                fxCtx.shadowColor = s.color;
+                fxCtx.fill();
+                fxCtx.restore();
+            }
+
+            // 8. שובל ניצוצות העכבר
+            for (let i = mouseSparkles.length - 1; i >= 0; i--) {
+                const m = mouseSparkles[i];
+                m.x += m.vx;
+                m.y += m.vy;
+                m.rotation += m.rotationSpeed;
+                m.alpha -= 0.028;
+                m.size *= 0.985;
+
+                if (m.alpha <= 0 || m.size <= 0.4) {
+                    mouseSparkles.splice(i, 1);
+                    continue;
+                }
+
+                drawStarSparkle(fxCtx, m.x, m.y, m.size, m.rotation, m.color, m.alpha);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
