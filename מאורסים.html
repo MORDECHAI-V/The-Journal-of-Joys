@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>לוח מאורסים</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px 0;
+      background-color: transparent; /* רקע שקוף לחלוטין */
+      font-family: 'David', 'FrankRuehl', serif;
+    }
+
+    /* המסגרת של השורה הנעה - ללא רקע וללא גבולות */
+    .ticker-wrapper {
+      width: 100%;
+      height: 190px;
+      overflow: hidden;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      position: relative;
+      direction: ltr;
+    }
+
+    /* המסלול שזז בפועל */
+    .ticker-track {
+      display: flex;
+      width: max-content;
+      animation: scroll-ads 30s linear infinite;
+    }
+
+    /* עצירת התנועה במעבר עכבר */
+    .ticker-wrapper:hover .ticker-track {
+      animation-play-state: paused;
+    }
+
+    /* עיצוב כרטיס מודעה בודד - מותאם ליחס התמונה שלך */
+    .ad-card {
+      position: relative;
+      width: 320px;  /* רוחב המודעה */
+      height: 155px; /* גובה המודעה */
+      background-image: url('bg.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      margin: 0 15px;
+      flex-shrink: 0;
+      direction: rtl;
+    }
+
+    /* מיקום שם החתן (הוזז עוד ימינה) */
+    .groom-name {
+      position: absolute;
+      top: 16%;      /* מרחק מלמעלה */
+      right: 1%;     /* הוקטן מ-4% ל-1% כדי להזיז עוד ימינה */
+      width: 38%;
+      text-align: center;
+      font-size: 17px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    /* מיקום שם הכלה (הוזז עוד שמאלה) */
+    .bride-name {
+      position: absolute;
+      top: 16%;      /* מרחק מלמעלה */
+      left: 1%;      /* הוקטן מ-4% ל-1% כדי להזיז עוד שמאלה */
+      width: 38%;
+      text-align: center;
+      font-size: 17px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    @keyframes scroll-ads {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ticker-wrapper">
+    <div class="ticker-track" id="ads-track"></div>
+  </div>
+
+  <script>
+    async function loadEngagements() {
+      try {
+        // שאיבת הנתונים ישירות מהקישור ב-GitHub (עם תוספת למניעת שמירת מטמון ישן)
+        const url = 'https://raw.githubusercontent.com/MORDECHAI-V/MEORASIM/refs/heads/main/data.json?t=' + new Date().getTime();
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error('לא ניתן לטעון את הקובץ מהשרת');
+        }
+
+        const couples = await response.json();
+        const track = document.getElementById('ads-track');
+
+        const createCardsHTML = (list) => list.map(couple => `
+          <div class="ad-card">
+            <div class="groom-name">${couple.groom}</div>
+            <div class="bride-name">${couple.bride}</div>
+          </div>
+        `).join('');
+
+        // שכפול המודעות כדי שהשורה תהיה מלאה ותזוז בלופ חלק
+        const cardsHTML = createCardsHTML(couples);
+        track.innerHTML = cardsHTML + cardsHTML + cardsHTML + cardsHTML;
+
+      } catch (error) {
+        console.error('שגיאה בטעינת הנתונים:', error);
+        document.getElementById('ads-track').innerHTML = 
+          '<p style="color:red; direction:rtl; padding: 20px;">שגיאה בטעינת קובץ הנתונים מ-GitHub. ודא שהמאגר מוגדר כ-Public ושהקובץ תקין.</p>';
+      }
+    }
+
+    loadEngagements();
+  </script>
+
+</body>
+</html>
