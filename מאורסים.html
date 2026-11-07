@@ -28,7 +28,7 @@
     .ticker-track {
       display: flex;
       width: max-content;
-      animation: scroll-ads 30s linear infinite;
+      animation: scroll-ads 30s linear infinite; /* הערך של הזמן יידרס אוטומטית על ידי ה-JS */
     }
 
     /* עצירת התנועה במעבר עכבר */
@@ -92,7 +92,7 @@
   <script>
     async function loadEngagements() {
       try {
-        // שאיבת הנתונים ישירות מהקישור ב-GitHub (עם תוספת למניעת שמירת מטמון ישן)
+        // שאיבת הנתונים ישירות מהקישור ב-GitHub 
         const url = 'https://raw.githubusercontent.com/MORDECHAI-V/MEORASIM/refs/heads/main/data.json?t=' + new Date().getTime();
         const response = await fetch(url);
         
@@ -113,6 +113,14 @@
         // שכפול המודעות כדי שהשורה תהיה מלאה ותזוז בלופ חלק
         const cardsHTML = createCardsHTML(couples);
         track.innerHTML = cardsHTML + cardsHTML + cardsHTML + cardsHTML;
+
+        // חישוב מהירות דינמית: קביעת משך האנימציה לפי כמות המודעות בפועל
+        const secondsPerCard = 4; // 4 שניות לכל מודעה מספקות קריאה נוחה ורגועה
+        
+        // מכיוון שהרשימה שוכפלה 4 פעמים והאנימציה רצה בדיוק עד אמצע המסלול (50%-),
+        // המרחק שעוברת האנימציה מכיל פעמיים את כמות הזוגות שיש במאגר.
+        const totalDuration = couples.length * 2 * secondsPerCard;
+        track.style.animationDuration = `${totalDuration}s`;
 
       } catch (error) {
         console.error('שגיאה בטעינת הנתונים:', error);
